@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "web: dev local node",
+			"type": "shell",
+			"command": "export PATH=\"$PWD/.tools/node/bin:$PATH\" && cd web && npm run dev",
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}
