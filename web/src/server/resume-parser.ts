@@ -1,15 +1,23 @@
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
 import type { TaskDraft } from "@/lib/mvp-types";
 
 const phonePattern = /(?:(?:\+?86[-\s]?)?1[3-9]\d{9})/;
 const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
 const cityPattern = /(北京|上海|深圳|广州|杭州|成都|苏州|南京|武汉|西安)/;
+const pageMarkerPattern = /^--\s*\d+\s+of\s+\d+\s*--$/i;
+const sectionHeaderPattern = /教育经历|教育背景|工作经历|实习经历|项目经历|项目经验|技能|专业技能|技能证书|证书|荣誉/;
+const nonNameDocumentPattern = /pdf|file|document|resume|curriculum vitae|个人简历|简历/i;
+const nameCandidatePattern = /^[A-Za-z\s.'-]+$|^[\u3400-\u9FFF·\s]{2,}$/u;
 
 const normalizeLines = (content: string) =>
   content
     .replace(/\r/g, "")
     .split("\n")
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((line) => !pageMarkerPattern.test(line));
 
 const findSection = (lines: string[], headers: string[]) => {
   const headerIndex = lines.findIndex((line) => headers.some((header) => line.includes(header)));
@@ -57,6 +65,35 @@ const buildSingleProject = (lines: string[]) => ({
   outcomeText: lines.slice(5, 7).join("；"),
 });
 
+const isLikelyNameLine = (line: string) => {
+  const normalized = line.trim();
+
+  if (!normalized || normalized.length > 20) {
+    return false;
+  }
+
+  if (phonePattern.test(normalized) || emailPattern.test(normalized)) {
+    return false;
+  }
+
+  if (pageMarkerPattern.test(normalized) || sectionHeaderPattern.test(normalized)) {
+    return false;
+  }
+
+  if (nonNameDocumentPattern.test(normalized)) {
+    return false;
+  }
+
+  if (/\d/.test(normalized)) {
+    return false;
+  }
+
+  return nameCandidatePattern.test(normalized);
+};
+
+const getPdfWorkerUrl = () =>
+  pathToFileURL(path.join(process.cwd(), "node_modules", "pdfjs-dist", "legacy", "build", "pdf.worker.mjs")).href;
+
 export const extractResumeText = async (file: File) => {
   const buffer = Buffer.from(await file.arrayBuffer());
   const extension = file.name.split(".").pop()?.toLowerCase();
@@ -76,10 +113,11 @@ export const extractResumeText = async (file: File) => {
 
   if (file.type === "application/pdf" || extension === "pdf") {
     const { PDFParse } = await import("pdf-parse");
+    PDFParse.setWorker(getPdfWorkerUrl());
     const parser = new PDFParse({ data: buffer });
 
     try {
-      const result = await parser.getText();
+      const result = await parser.getText({ pageJoiner: "" });
       return result.text;
     } finally {
       await parser.destroy();
@@ -98,9 +136,7 @@ export const parseResumeToDraft = (content: string, currentDraft: TaskDraft): Ta
   const phone = lines.join(" ").match(phonePattern)?.[0] ?? currentDraft.basicInfo.phone;
   const email = lines.join(" ").match(emailPattern)?.[0] ?? currentDraft.basicInfo.email;
   const city = lines.join(" ").match(cityPattern)?.[0] ?? currentDraft.basicInfo.city;
-  const possibleName =
-    lines.find((line) => line.length <= 12 && !phonePattern.test(line) && !emailPattern.test(line)) ??
-    currentDraft.basicInfo.name;
+  const possibleName = lines.find(isLikelyNameLine) ?? currentDraft.basicInfo.name;
 
   const nextDraft: TaskDraft = {
     ...currentDraft,

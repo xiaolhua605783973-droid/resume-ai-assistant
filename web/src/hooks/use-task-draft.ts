@@ -18,6 +18,7 @@ export const useTaskDraft = (taskId: string | null) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isParsingResume, setIsParsingResume] = useState(false);
   const persistTimerRef = useRef<number | null>(null);
+  const savingIndicatorTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!taskId) {
@@ -57,6 +58,10 @@ export const useTaskDraft = (taskId: string | null) => {
       if (persistTimerRef.current) {
         window.clearTimeout(persistTimerRef.current);
       }
+
+      if (savingIndicatorTimerRef.current) {
+        window.clearTimeout(savingIndicatorTimerRef.current);
+      }
     };
   }, [taskId]);
 
@@ -69,7 +74,14 @@ export const useTaskDraft = (taskId: string | null) => {
       window.clearTimeout(persistTimerRef.current);
     }
 
-    setIsSaving(true);
+    if (savingIndicatorTimerRef.current) {
+      window.clearTimeout(savingIndicatorTimerRef.current);
+    }
+
+    savingIndicatorTimerRef.current = window.setTimeout(() => {
+      setIsSaving(true);
+    }, 900);
+
     persistTimerRef.current = window.setTimeout(async () => {
       try {
         const response = await persistTaskDraft(taskId, nextDraft);
@@ -78,6 +90,11 @@ export const useTaskDraft = (taskId: string | null) => {
       } catch (persistError) {
         setError(persistError instanceof Error ? persistError.message : "Task save failed.");
       } finally {
+        if (savingIndicatorTimerRef.current) {
+          window.clearTimeout(savingIndicatorTimerRef.current);
+          savingIndicatorTimerRef.current = null;
+        }
+
         setIsSaving(false);
       }
     }, 350);

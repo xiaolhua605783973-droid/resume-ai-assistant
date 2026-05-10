@@ -147,7 +147,9 @@ function IntakePageContent() {
           {uploadMessage ? <p className="text-sm text-cyan-900">{uploadMessage}</p> : null}
           {error ? <p className="text-sm text-rose-700">{error}</p> : null}
           {isParsingResume ? <p className="text-sm text-cyan-900">正在解析简历，请稍候...</p> : null}
-          {isSaving ? <p className="text-sm text-slate-500">草稿正在同步到后端...</p> : null}
+          <p aria-live="polite" className="min-h-5 text-sm text-slate-500">
+            {isSaving ? "草稿正在同步到后端..." : null}
+          </p>
         </div>
 
         <article className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 md:grid-cols-2">

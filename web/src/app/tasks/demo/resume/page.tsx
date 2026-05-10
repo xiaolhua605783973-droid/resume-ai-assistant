@@ -130,7 +130,9 @@ function ResumePageContent() {
           </ul>
 
           {error ? <p className="mt-5 text-sm leading-7 text-rose-200">{error}</p> : null}
-          {isSaving ? <p className="mt-5 text-sm leading-7 text-slate-300">简历修改正在同步到后端...</p> : null}
+          <p aria-live="polite" className="mt-5 min-h-7 text-sm leading-7 text-slate-300">
+            {isSaving ? "简历修改正在同步到后端..." : null}
+          </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
             <button

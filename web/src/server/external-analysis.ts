@@ -290,22 +290,32 @@ const buildUserPrompt = (draft: TaskDraft) =>
   );
 
 const requestExternalAnalysis = async (config: AnalysisClientConfig, draft: TaskDraft) => {
-  const response = await fetch(`${config.baseUrl}${config.path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      temperature: 0.2,
-      messages: [
-        { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: buildUserPrompt(draft) },
-      ],
-    }),
-    signal: AbortSignal.timeout(45_000),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${config.baseUrl}${config.path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model,
+        temperature: 0.2,
+        messages: [
+          { role: "system", content: buildSystemPrompt() },
+          { role: "user", content: buildUserPrompt(draft) },
+        ],
+      }),
+      signal: AbortSignal.timeout(180_000),
+    });
+  } catch (fetchError) {
+    if (fetchError instanceof DOMException && fetchError.name === "TimeoutError") {
+      throw new Error("分析超时：外部分析接口未在 3 分钟内返回结果，请稍后重试或精简 JD 文本。");
+    }
+
+    throw fetchError;
+  }
 
   const payload = (await response.json()) as ChatCompletionResponse;
 

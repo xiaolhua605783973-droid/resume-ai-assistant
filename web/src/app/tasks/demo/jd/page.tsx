@@ -101,11 +101,9 @@ function JobDescriptionPageContent() {
           </div>
         ) : null}
 
-        {isSaving ? (
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
-            JD 草稿正在同步到后端...
-          </div>
-        ) : null}
+        <div aria-live="polite" className="min-h-6 text-sm leading-6 text-slate-600">
+          {isSaving ? "JD 草稿正在同步到后端..." : null}
+        </div>
 
         {!draft.jdAnalysis && draft.jdText.trim().length > 0 && draft.jdText.trim().length < 40 ? (
           <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-7 text-rose-700">
