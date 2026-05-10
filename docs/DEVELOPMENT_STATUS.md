@@ -60,6 +60,7 @@
 - `web`: local `/api/tasks/[taskId]/parse-resume` smoke test passed with a real PDF upload after setting an explicit absolute `pdf.worker.mjs` URL for `pdf-parse`.
 - `web`: local PDF parse smoke test confirmed `pageJoiner: ""` removes synthetic page markers and the updated name heuristic leaves noisy titles like `Dummy PDF file` out of `basicInfo.name`.
 - `web`: `npm run lint` passed after delaying autosave hints and reserving status-line space to stop layout jumps while typing.
+- `web`: `npm run lint` passed after keeping autosave optimistic locally instead of replacing the draft with each persist response.
 
 ## Bug Log
 
@@ -74,6 +75,7 @@
 | 2026-05-10 | Resume parser runtime | PDF resume import failed in Next.js dev with `Setting up fake worker failed: Cannot find module ... pdf.worker.mjs` | `pdf-parse` falls back to a fake worker in Node and defaults `workerSrc` to a relative `./pdf.worker.mjs`, which resolves against `.next` server chunks instead of the actual installed worker file | Set `PDFParse` to use an absolute `file://.../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs` URL before parsing PDFs | In Next.js server runtimes, do not rely on library-default relative worker paths; pin worker assets to an absolute URL or file path |
 | 2026-05-10 | Resume parser heuristics | PDF imports could leak synthetic page markers or generic document titles into candidate fields, including `basicInfo.name` | `pdf-parse` adds a default page joiner and the first-pass name heuristic accepted almost any short non-phone/non-email line | Disabled the PDF page joiner and tightened name-candidate filtering to reject page markers, section headers, numeric lines, and generic document-title text | For heuristic parsing, strip library-generated text artifacts before field inference and require positive evidence for high-sensitivity fields like names |
 | 2026-05-10 | Autosave UX | Typing in intake/resume forms could make the page jump vertically because the save hint kept appearing and disappearing | The UI rendered autosave notices as conditional blocks, and the hook exposed `isSaving` immediately on every debounced draft write | Delayed the autosave hint in `use-task-draft.ts` and rendered fixed-height status lines in intake/JD/resume pages | For autosave UX, do not mount/unmount layout-affecting status blocks on each keystroke; debounce the indicator and reserve space for transient text |
+| 2026-05-10 | IME composition | Chinese input could only keep the first pinyin chunk because the IME candidate window was interrupted mid-typing | Each autosave success replaced local draft state with the server echo, so a round-trip could overwrite controlled input state during composition | Kept autosave optimistic locally and stopped calling `setTask(response.task)` after successful draft persists | For IME-safe autosave, treat persist responses as acknowledgements unless the server actually transforms the draft |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
@@ -95,6 +97,7 @@
 - Fixed the PDF resume-import runtime bug in Next.js dev by configuring `pdf-parse` with an explicit absolute worker URL.
 - Tightened PDF parsing heuristics so synthetic page markers and generic document-title text no longer pollute inferred resume fields.
 - Smoothed autosave UX by delaying save hints and reserving status-line space so form editing no longer causes page jumps.
+- Stopped autosave responses from replacing local draft state so Chinese IME composition is no longer interrupted while typing.
 - Added `web/src/server/external-analysis.ts` and switched `/api/tasks/[taskId]/analyze` to an OpenAI-compatible external provider with local fallback when env config is missing.
 - Documented external analysis env vars in `web/.env.example` and `web/README.md`.
 

@@ -84,8 +84,7 @@ export const useTaskDraft = (taskId: string | null) => {
 
     persistTimerRef.current = window.setTimeout(async () => {
       try {
-        const response = await persistTaskDraft(taskId, nextDraft);
-        setTask(response.task);
+        await persistTaskDraft(taskId, nextDraft);
         setError(null);
       } catch (persistError) {
         setError(persistError instanceof Error ? persistError.message : "Task save failed.");

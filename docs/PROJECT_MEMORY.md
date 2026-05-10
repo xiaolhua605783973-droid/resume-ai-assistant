@@ -68,6 +68,7 @@
 - `pdf-parse` needs an explicit absolute worker URL in the Next.js server runtime; relying on its default `./pdf.worker.mjs` path breaks in `.next` server chunks.
 - For PDF resume extraction, pass `pageJoiner: ""` to avoid synthetic page markers leaking into heuristics, and treat document-title lines like `Dummy PDF file` as noise rather than candidate names.
 - Autosave status hints should be delayed and rendered in reserved space; toggling conditional save banners during typing causes visible layout shift and scroll jumps.
+- Autosave should not replace local form state with the server echo on each successful persist; that server round-trip can interrupt IME composition for Chinese input.
 
 ## Open Architecture Decisions
 
