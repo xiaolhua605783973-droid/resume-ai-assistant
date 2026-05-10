@@ -44,6 +44,7 @@
 - `web`: `npm run lint` passed after replacing the nested git repository with normal tracked files.
 - `web`: `npm run lint` passed after wiring the client-side MVP flow.
 - `web`: `npm run build` passed after wiring the client-side MVP flow.
+- `web`: `npm run lint` passed after stabilizing the external store snapshot for the new task page.
 
 ## Bug Log
 
@@ -52,6 +53,7 @@
 | 2026-05-10 | Local tooling | `npm run lint` failed with `spawn sh ENOENT` | PATH was overwritten with only the local Node directory and the system shell path was lost | Changed command pattern to prefix local Node onto existing PATH | Always use `PATH="<local-node>:$PATH"` instead of replacing PATH |
 | 2026-05-10 | Git structure | Root commit stored `web` as an embedded repository gitlink instead of normal source files | `create-next-app` initialized its own `.git` directory inside `web/`, and the root commit captured it as a nested repo | Remove `web/.git`, unstage the gitlink, and re-add `web/` as normal files in the root repository | After scaffolding inside an existing repo, always check for nested `.git` directories before the first commit |
 | 2026-05-10 | React state sync | The local draft hook triggered a lint error for synchronous `setState` inside an effect | The first persistence implementation loaded local storage through `useEffect` and immediately called `setState` | Replaced effect-driven state hydration with `useSyncExternalStore` and storage event subscription | For local persistence in React 19, prefer `useSyncExternalStore` over effect-triggered hydration when the store already exists outside React |
+| 2026-05-10 | External store snapshot | The new task page threw `The result of getSnapshot should be cached to avoid an infinite loop` | `getTaskDraft()` returned a fresh object on every `useSyncExternalStore` snapshot read because localStorage data was reparsed every time | Added module-level snapshot caching keyed by the serialized localStorage value so unchanged data returns the same object reference | For `useSyncExternalStore`, make `getSnapshot` return a referentially stable value whenever the underlying store has not changed |
 
 ## Change Log
 
@@ -65,6 +67,7 @@
 - Configured git identity and created the initial baseline commit.
 - Fixed the nested git repository issue inside `web/` so root git tracks source files normally.
 - Converted the placeholder route skeletons into a working client-side MVP flow.
+- Fixed the unstable external store snapshot on the new task page.
 
 ## Handoff Notes
 

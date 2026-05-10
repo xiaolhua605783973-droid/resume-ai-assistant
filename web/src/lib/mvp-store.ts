@@ -2,6 +2,8 @@ import { createEmptyTaskDraft, type TaskDraft } from "@/lib/mvp-types";
 
 const STORAGE_KEY = "ai-job-mvp-demo-task";
 const EVENT_NAME = "ai-job-mvp-demo-task-change";
+let cachedDraft: TaskDraft | null = null;
+let cachedRawDraft: string | null = null;
 
 const emitDraftChange = () => {
   if (typeof window === "undefined") {
@@ -13,22 +15,35 @@ const emitDraftChange = () => {
 
 export const getTaskDraft = (): TaskDraft => {
   if (typeof window === "undefined") {
-    return createEmptyTaskDraft();
+    return cachedDraft ?? createEmptyTaskDraft();
   }
 
   const raw = window.localStorage.getItem(STORAGE_KEY);
 
   if (!raw) {
     const initialDraft = createEmptyTaskDraft();
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDraft));
+    const serializedDraft = JSON.stringify(initialDraft);
+    window.localStorage.setItem(STORAGE_KEY, serializedDraft);
+    cachedDraft = initialDraft;
+    cachedRawDraft = serializedDraft;
     return initialDraft;
   }
 
+  if (cachedDraft && cachedRawDraft === raw) {
+    return cachedDraft;
+  }
+
   try {
-    return JSON.parse(raw) as TaskDraft;
+    const parsedDraft = JSON.parse(raw) as TaskDraft;
+    cachedDraft = parsedDraft;
+    cachedRawDraft = raw;
+    return parsedDraft;
   } catch {
     const fallbackDraft = createEmptyTaskDraft();
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackDraft));
+    const serializedDraft = JSON.stringify(fallbackDraft);
+    window.localStorage.setItem(STORAGE_KEY, serializedDraft);
+    cachedDraft = fallbackDraft;
+    cachedRawDraft = serializedDraft;
     return fallbackDraft;
   }
 };
@@ -38,13 +53,15 @@ export const saveTaskDraft = (draft: TaskDraft) => {
     return;
   }
 
-  window.localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      ...draft,
-      updatedAt: new Date().toISOString(),
-    }),
-  );
+  const nextDraft = {
+    ...draft,
+    updatedAt: new Date().toISOString(),
+  };
+  const serializedDraft = JSON.stringify(nextDraft);
+
+  window.localStorage.setItem(STORAGE_KEY, serializedDraft);
+  cachedDraft = nextDraft;
+  cachedRawDraft = serializedDraft;
   emitDraftChange();
 };
 
@@ -54,7 +71,11 @@ export const resetTaskDraft = () => {
   }
 
   const nextDraft = createEmptyTaskDraft();
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextDraft));
+  const serializedDraft = JSON.stringify(nextDraft);
+
+  window.localStorage.setItem(STORAGE_KEY, serializedDraft);
+  cachedDraft = nextDraft;
+  cachedRawDraft = serializedDraft;
   emitDraftChange();
   return nextDraft;
 };
