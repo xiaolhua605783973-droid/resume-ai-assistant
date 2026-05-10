@@ -1,20 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import { FormField, TextArea } from "@/components/form-field";
 import { SectionTitle } from "@/components/section-title";
 import { useTaskDraft } from "@/hooks/use-task-draft";
-import { analyzeMatch, generateResumeDraft } from "@/lib/mvp-engine";
+import { withTaskId } from "@/lib/mvp-api";
 
-export default function ResumePage() {
-  const { draft, loaded, updateDraft } = useTaskDraft();
+function ResumePageContent() {
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId");
+  const { draft, loaded, error, isSaving, updateDraft } = useTaskDraft(taskId);
 
-  if (!loaded) {
+  if (!taskId) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
+        <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-slate-200 bg-white p-8">
+          <SectionTitle
+            eyebrow="Step 5"
+            title="缺少任务上下文"
+            description="请先从新建任务页创建任务，再进入简历编辑。"
+          />
+          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/new">
+            返回新建任务
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  if (!loaded || !draft) {
     return null;
   }
 
-  if (!draft.jdAnalysis) {
+  if (!draft.jdAnalysis || !draft.matchAnalysis || !draft.resumeDraft) {
     return (
       <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
         <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-slate-200 bg-white p-8">
@@ -23,7 +44,7 @@ export default function ResumePage() {
             title="还没有可生成的简历"
             description="先完成 JD 拆解与匹配分析，再回来编辑导出简历。"
           />
-          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/demo/analysis">
+          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href={withTaskId("/tasks/demo/analysis", taskId)}>
             前往匹配分析
           </Link>
         </section>
@@ -31,8 +52,8 @@ export default function ResumePage() {
     );
   }
 
-  const analysis = draft.matchAnalysis ?? analyzeMatch(draft, draft.jdAnalysis);
-  const resumeDraft = draft.resumeDraft ?? generateResumeDraft(draft, draft.jdAnalysis, analysis);
+  const analysis = draft.matchAnalysis;
+  const resumeDraft = draft.resumeDraft;
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#e2e8f0_100%)] px-6 py-10 text-slate-900">
@@ -108,6 +129,9 @@ export default function ResumePage() {
             ))}
           </ul>
 
+          {error ? <p className="mt-5 text-sm leading-7 text-rose-200">{error}</p> : null}
+          {isSaving ? <p className="mt-5 text-sm leading-7 text-slate-300">简历修改正在同步到后端...</p> : null}
+
           <div className="mt-8 flex flex-wrap gap-4">
             <button
               className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950"
@@ -119,12 +143,20 @@ export default function ResumePage() {
             <Link className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950" href="/">
               返回首页
             </Link>
-            <Link className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white" href="/tasks/demo/analysis">
+            <Link className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white" href={withTaskId("/tasks/demo/analysis", taskId)}>
               返回分析页
             </Link>
           </div>
         </aside>
       </section>
     </main>
+  );
+}
+
+export default function ResumePage() {
+  return (
+    <Suspense fallback={null}>
+      <ResumePageContent />
+    </Suspense>
   );
 }

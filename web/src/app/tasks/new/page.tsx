@@ -4,12 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { SectionTitle } from "@/components/section-title";
-import { useTaskDraft } from "@/hooks/use-task-draft";
+import { createTask, withTaskId } from "@/lib/mvp-api";
 import { mvpFlow } from "@/lib/mvp-data";
 
 export default function NewTaskPage() {
   const router = useRouter();
-  const { restartDraft } = useTaskDraft();
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#fffaf5_0%,_#fff7ed_100%)] px-6 py-10 text-slate-900">
@@ -36,9 +35,9 @@ export default function NewTaskPage() {
         <div className="flex flex-wrap gap-4">
           <button
             className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            onClick={() => {
-              restartDraft();
-              router.push("/tasks/demo/intake");
+            onClick={async () => {
+              const response = await createTask();
+              router.push(withTaskId("/tasks/demo/intake", response.task.id));
             }}
             type="button"
           >

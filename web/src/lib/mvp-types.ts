@@ -85,6 +85,13 @@ export type TaskDraft = {
   updatedAt: string;
 };
 
+export type TaskRecord = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  draft: TaskDraft;
+};
+
 export const createEmptyTaskDraft = (): TaskDraft => ({
   basicInfo: {
     name: "",

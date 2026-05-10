@@ -3,7 +3,7 @@
 ## Project Snapshot
 
 - Last updated: 2026-05-10
-- Current phase: Environment ready, workflow scaffolding started
+- Current phase: Backend task flow and external analysis validated end to end
 - Current MVP: JD-driven resume decision assistant
 - Repo status: workflow docs established, git initialized on `main`, baseline commits created, `web/` tracked normally
 
@@ -24,16 +24,23 @@
 - Added workflow instruction files and project memory files.
 - Initialized the git repository on the `main` branch.
 - Implemented a functional client-side MVP flow for intake, JD parsing, match analysis, resume generation, editing, and browser PDF export.
+- Added backend task persistence with JSON file storage under `web/.data/tasks`.
+- Added task APIs for create, fetch, patch, analyze, and resume parsing.
+- Migrated the task pages to a shared backend `taskId` flow instead of browser-local draft state.
+- Connected resume import parsing for TXT, DOCX, and PDF uploads.
+- Added an OpenAI-compatible external analysis provider for the analyze route.
+- Added environment-driven fallback so local development can still use deterministic analysis when no external API config is present.
 
 ### In Progress
 
-- Refining the functional MVP and deciding when to replace client-local storage and deterministic analysis with backend APIs.
+- Hardening provider error handling, prompt stability, and task-history UX on top of the validated backend flow.
 
 ### Next Recommended Work
 
-1. Replace browser-local task drafts with persistent backend storage.
-2. Replace deterministic local JD analysis with a real API contract and server-side orchestration.
-3. Add resume import parsing and task history beyond the single demo task.
+1. Add task list/history UI so multiple backend tasks are navigable beyond direct `taskId` links.
+2. Improve resume parser section splitting and field confidence feedback.
+3. Decide whether external analysis failures should hard-fail or offer an explicit UI fallback choice.
+4. Evaluate whether provider-specific prompt tuning is needed beyond the current normalized JSON contract.
 
 ## Validation History
 
@@ -45,6 +52,11 @@
 - `web`: `npm run lint` passed after wiring the client-side MVP flow.
 - `web`: `npm run build` passed after wiring the client-side MVP flow.
 - `web`: `npm run lint` passed after stabilizing the external store snapshot for the new task page.
+- `web`: `npm run lint` passed after migrating the task flow to backend APIs.
+- `web`: `npm run build` passed after wiring backend task persistence, analysis routes, resume parsing, and `taskId` page routing.
+- `web`: `npm run lint` passed after wiring the OpenAI-compatible external analysis provider and environment fallback.
+- `web`: `npm run build` passed after wiring the OpenAI-compatible external analysis provider and environment fallback.
+- `web`: live DeepSeek smoke test passed on local dev server with `.env.local` (`ANALYSIS_API_MODEL=deepseek-v4-flash`); `POST /api/tasks/[taskId]/analyze` completed in about 24.5s and persisted external analysis output.
 
 ## Bug Log
 
@@ -54,6 +66,9 @@
 | 2026-05-10 | Git structure | Root commit stored `web` as an embedded repository gitlink instead of normal source files | `create-next-app` initialized its own `.git` directory inside `web/`, and the root commit captured it as a nested repo | Remove `web/.git`, unstage the gitlink, and re-add `web/` as normal files in the root repository | After scaffolding inside an existing repo, always check for nested `.git` directories before the first commit |
 | 2026-05-10 | React state sync | The local draft hook triggered a lint error for synchronous `setState` inside an effect | The first persistence implementation loaded local storage through `useEffect` and immediately called `setState` | Replaced effect-driven state hydration with `useSyncExternalStore` and storage event subscription | For local persistence in React 19, prefer `useSyncExternalStore` over effect-triggered hydration when the store already exists outside React |
 | 2026-05-10 | External store snapshot | The new task page threw `The result of getSnapshot should be cached to avoid an infinite loop` | `getTaskDraft()` returned a fresh object on every `useSyncExternalStore` snapshot read because localStorage data was reparsed every time | Added module-level snapshot caching keyed by the serialized localStorage value so unchanged data returns the same object reference | For `useSyncExternalStore`, make `getSnapshot` return a referentially stable value whenever the underlying store has not changed |
+| 2026-05-10 | Backend draft hook | ESLint failed with `react-hooks/set-state-in-effect` in `use-task-draft.ts` | The first server-backed hook version synchronously called `setTask` and `setLoaded` in the effect body for missing/loading task state | Removed synchronous effect-body state writes and let the async load path own task hydration | In React 19, keep effect bodies for subscriptions and async orchestration; avoid immediate state writes in the effect body |
+| 2026-05-10 | Resume parser build | Production build failed on the PDF import branch with `Property 'default' does not exist on type ... pdf-parse` | `pdf-parse` in this version exposes an ESM `PDFParse` class export instead of a default function export | Switched PDF extraction to instantiate `PDFParse`, call `getText()`, and destroy the parser | When introducing new parsing libraries, inspect the installed package types instead of assuming CommonJS-style default exports |
+| 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
 
@@ -68,6 +83,11 @@
 - Fixed the nested git repository issue inside `web/` so root git tracks source files normally.
 - Converted the placeholder route skeletons into a working client-side MVP flow.
 - Fixed the unstable external store snapshot on the new task page.
+- Added backend task storage, task APIs, and resume parsing support.
+- Migrated `/tasks/new` and the demo task flow pages to backend `taskId` routing and persistence.
+- Fixed the server-backed draft hook lint issue, the PDF parser ESM import issue, and the App Router suspense build issue.
+- Added `web/src/server/external-analysis.ts` and switched `/api/tasks/[taskId]/analyze` to an OpenAI-compatible external provider with local fallback when env config is missing.
+- Documented external analysis env vars in `web/.env.example` and `web/README.md`.
 
 ## Handoff Notes
 
@@ -75,3 +95,4 @@
 - Keep future updates concise and operational.
 - If a task changes architectural direction, record that explicitly in the summary and next-step sections.
 - If a bug is fixed, append a bug log row before ending the task.
+- Current live slice is backend-backed from task creation through resume editing, and the analyze route has been verified against a real DeepSeek OpenAI-compatible endpoint.

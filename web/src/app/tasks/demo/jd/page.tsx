@@ -1,18 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import { FormField, TextArea } from "@/components/form-field";
 import { SectionTitle } from "@/components/section-title";
 import { useTaskDraft } from "@/hooks/use-task-draft";
-import { analyzeJd, analyzeMatch } from "@/lib/mvp-engine";
+import { withTaskId } from "@/lib/mvp-api";
 
-export default function JobDescriptionPage() {
+function JobDescriptionPageContent() {
   const router = useRouter();
-  const { draft, loaded, updateDraft } = useTaskDraft();
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId");
+  const { draft, loaded, error, isAnalyzing, isSaving, updateDraft, requestAnalysis } =
+    useTaskDraft(taskId);
 
-  if (!loaded) {
+  if (!taskId) {
+    return (
+      <main className="min-h-screen bg-[#fffaf5] px-6 py-10 text-slate-900">
+        <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-orange-100 bg-white p-8">
+          <SectionTitle
+            eyebrow="Step 3"
+            title="缺少任务上下文"
+            description="请先创建任务并录入经历，再进行 JD 分析。"
+          />
+          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/new">
+            返回新建任务
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  if (!loaded || !draft) {
     return null;
   }
 
@@ -49,26 +70,16 @@ export default function JobDescriptionPage() {
         <div className="flex flex-wrap gap-4">
           <button
             className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white"
-            onClick={() => {
+            onClick={async () => {
               if (draft.jdText.trim().length < 40) {
                 return;
               }
 
-              updateDraft((current) => {
-                const jdAnalysis = analyzeJd(current.jdText);
-                const matchAnalysis = analyzeMatch(current, jdAnalysis);
-
-                return {
-                  ...current,
-                  jdAnalysis,
-                  matchAnalysis,
-                  resumeDraft: null,
-                };
-              });
+              await requestAnalysis();
             }}
             type="button"
           >
-            解析 JD
+            {isAnalyzing ? "解析中..." : "解析 JD"}
           </button>
           <button
             className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700"
@@ -76,13 +87,25 @@ export default function JobDescriptionPage() {
               if (!draft.jdAnalysis) {
                 return;
               }
-              router.push("/tasks/demo/analysis");
+              router.push(withTaskId("/tasks/demo/analysis", taskId));
             }}
             type="button"
           >
             下一步：匹配分析
           </button>
         </div>
+
+        {error ? (
+          <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-7 text-rose-700">
+            {error}
+          </div>
+        ) : null}
+
+        {isSaving ? (
+          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
+            JD 草稿正在同步到后端...
+          </div>
+        ) : null}
 
         {!draft.jdAnalysis && draft.jdText.trim().length > 0 && draft.jdText.trim().length < 40 ? (
           <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-7 text-rose-700">
@@ -113,11 +136,19 @@ export default function JobDescriptionPage() {
         ) : null}
 
         <div className="flex flex-wrap gap-4">
-          <Link className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700" href="/tasks/demo/intake">
+          <Link className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700" href={withTaskId("/tasks/demo/intake", taskId)}>
             返回经历录入
           </Link>
         </div>
       </section>
     </main>
+  );
+}
+
+export default function JobDescriptionPage() {
+  return (
+    <Suspense fallback={null}>
+      <JobDescriptionPageContent />
+    </Suspense>
   );
 }

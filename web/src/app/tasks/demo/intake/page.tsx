@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 import { FormField, TextArea, TextInput } from "@/components/form-field";
 import { SectionTitle } from "@/components/section-title";
 import { useTaskDraft } from "@/hooks/use-task-draft";
+import { withTaskId } from "@/lib/mvp-api";
 import type {
   BasicInfo,
   ExperienceItem,
@@ -24,11 +26,39 @@ const basicFields: Array<{ key: keyof BasicInfo; label: string; hint?: string }>
   { key: "city", label: "所在城市" },
 ];
 
-export default function IntakePage() {
+function IntakePageContent() {
   const router = useRouter();
-  const { draft, loaded, updateDraft } = useTaskDraft();
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId");
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const {
+    draft,
+    loaded,
+    error,
+    isSaving,
+    isParsingResume,
+    updateDraft,
+    importResume,
+  } = useTaskDraft(taskId);
 
-  if (!loaded) {
+  if (!taskId) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
+        <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-slate-200 bg-white p-8">
+          <SectionTitle
+            eyebrow="Step 2"
+            title="缺少任务上下文"
+            description="请先从新建任务页面创建一个服务端任务，再回来录入经历。"
+          />
+          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/new">
+            返回新建任务
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  if (!loaded || !draft) {
     return null;
   }
 
@@ -78,11 +108,46 @@ export default function IntakePage() {
         <SectionTitle
           eyebrow="Step 2"
           title="经历录入与简历解析确认"
-          description="现在已经接入任务级草稿保存。先把真实经历录进去，后面的 JD 分析和简历生成都会复用它。"
+          description="当前会把草稿保存到后端任务里。你可以先手动录入，也可以上传简历做初步解析。"
         />
 
         <div className="rounded-[1.5rem] border border-orange-200 bg-orange-50 p-5 text-sm leading-7 text-orange-900">
           当前信息完整度：<span className="font-semibold">{completion}%</span>。填写越完整，后面的 JD 拆解和匹配判断越稳定。
+        </div>
+
+        <div className="grid gap-4 rounded-[1.5rem] border border-dashed border-cyan-300 bg-cyan-50 p-5">
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="rounded-full border border-cyan-300 px-4 py-2 text-sm font-semibold text-cyan-900">
+              导入旧简历
+              <input
+                accept=".txt,.pdf,.docx"
+                className="hidden"
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+
+                  if (!file) {
+                    return;
+                  }
+
+                  const response = await importResume(file);
+
+                  if (response?.parsedPreview) {
+                    setUploadMessage(`已解析：${file.name}，已将关键信息回填到当前任务。`);
+                  }
+
+                  event.target.value = "";
+                }}
+                type="file"
+              />
+            </label>
+            <span className="text-sm text-cyan-900">
+              支持 TXT、DOCX、PDF。当前为启发式解析，可导入后人工修正。
+            </span>
+          </div>
+          {uploadMessage ? <p className="text-sm text-cyan-900">{uploadMessage}</p> : null}
+          {error ? <p className="text-sm text-rose-700">{error}</p> : null}
+          {isParsingResume ? <p className="text-sm text-cyan-900">正在解析简历，请稍候...</p> : null}
+          {isSaving ? <p className="text-sm text-slate-500">草稿正在同步到后端...</p> : null}
         </div>
 
         <article className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 md:grid-cols-2">
@@ -257,13 +322,13 @@ export default function IntakePage() {
         </section>
 
         <div className="rounded-[1.5rem] border border-dashed border-orange-300 bg-orange-50 p-5 text-sm leading-7 text-orange-900">
-          旧简历上传解析这一步暂时仍用占位交互，当前 MVP 先把手动录入和草稿保存闭环做稳。
+          导入解析只会帮你做第一轮结构化填充，不会虚构任何经历。导入后请务必人工检查字段是否正确。
         </div>
 
         <div className="flex flex-wrap gap-4">
           <button
             className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white"
-            onClick={() => router.push("/tasks/demo/jd")}
+            onClick={() => router.push(withTaskId("/tasks/demo/jd", taskId))}
             type="button"
           >
             下一步：JD拆解
@@ -274,5 +339,13 @@ export default function IntakePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function IntakePage() {
+  return (
+    <Suspense fallback={null}>
+      <IntakePageContent />
+    </Suspense>
   );
 }
