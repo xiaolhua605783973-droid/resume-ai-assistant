@@ -70,6 +70,7 @@
 - Autosave status hints should be delayed and rendered in reserved space; toggling conditional save banners during typing causes visible layout shift and scroll jumps.
 - Autosave should not replace local form state with the server echo on each successful persist; that server round-trip can interrupt IME composition for Chinese input.
 - Shared text inputs need local composition buffering; even without server echo, controlled `onChange` updates can still commit half-finished pinyin into parent state before `compositionend`.
+- Some browsers still emit a trailing `input` or `change` after `compositionend`; shared fields need to check the native `isComposing` flag and deduplicate already-forwarded values so `compositionend`, trailing input, and blur do not re-commit the same IME text.
 
 ## Open Architecture Decisions
 

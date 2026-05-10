@@ -40,6 +40,13 @@ const normalizeFieldValue = (value: string | number | readonly string[] | undefi
   return value ?? "";
 };
 
+const isNativeComposingChange = <T extends HTMLInputElement | HTMLTextAreaElement>(
+  event: ChangeEvent<T>,
+) => {
+  const nativeEvent = event.nativeEvent as Event & { isComposing?: boolean };
+  return nativeEvent.isComposing === true;
+};
+
 const forwardCommittedChange = <T extends HTMLInputElement | HTMLTextAreaElement>(
   element: T,
   onChange?: (event: ChangeEvent<T>) => void,
@@ -66,10 +73,14 @@ export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   } = props;
   const [localValue, setLocalValue] = useState(() => normalizeFieldValue(value));
   const composingRef = useRef(false);
+  const skipNextChangeRef = useRef(false);
+  const lastForwardedValueRef = useRef(normalizeFieldValue(value));
 
   useEffect(() => {
     if (!composingRef.current) {
-      setLocalValue(normalizeFieldValue(value));
+      const normalizedValue = normalizeFieldValue(value);
+      setLocalValue(normalizedValue);
+      lastForwardedValueRef.current = normalizedValue;
     }
   }, [value]);
 
@@ -78,23 +89,50 @@ export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
       {...rest}
       className={`rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 ${className ?? ""}`.trim()}
       onBlur={(event: FocusEvent<HTMLInputElement>) => {
-        if (!composingRef.current && localValue !== normalizeFieldValue(value)) {
+        if (
+          !composingRef.current
+          && localValue !== normalizeFieldValue(value)
+          && localValue !== lastForwardedValueRef.current
+        ) {
+          lastForwardedValueRef.current = localValue;
           forwardCommittedChange(event.currentTarget, onChange);
         }
 
         onBlur?.(event);
       }}
       onChange={(event: ChangeEvent<HTMLInputElement>) => {
-        setLocalValue(event.target.value);
+        const nextValue = event.target.value;
+
+        if (skipNextChangeRef.current) {
+          skipNextChangeRef.current = false;
+          return;
+        }
+
+        setLocalValue(nextValue);
+
+        if (composingRef.current || isNativeComposingChange(event) || nextValue === lastForwardedValueRef.current) {
+          return;
+        }
+
+        lastForwardedValueRef.current = nextValue;
 
         if (!composingRef.current) {
           onChange?.(event);
         }
       }}
       onCompositionEnd={(event: CompositionEvent<HTMLInputElement>) => {
+        const committedValue = event.currentTarget.value;
+
         composingRef.current = false;
-        setLocalValue(event.currentTarget.value);
+        skipNextChangeRef.current = true;
+        setLocalValue(committedValue);
         onCompositionEnd?.(event);
+
+        if (committedValue === lastForwardedValueRef.current) {
+          return;
+        }
+
+        lastForwardedValueRef.current = committedValue;
         forwardCommittedChange(event.currentTarget, onChange);
       }}
       onCompositionStart={(event: CompositionEvent<HTMLInputElement>) => {
@@ -118,10 +156,14 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   } = props;
   const [localValue, setLocalValue] = useState(() => normalizeFieldValue(value));
   const composingRef = useRef(false);
+  const skipNextChangeRef = useRef(false);
+  const lastForwardedValueRef = useRef(normalizeFieldValue(value));
 
   useEffect(() => {
     if (!composingRef.current) {
-      setLocalValue(normalizeFieldValue(value));
+      const normalizedValue = normalizeFieldValue(value);
+      setLocalValue(normalizedValue);
+      lastForwardedValueRef.current = normalizedValue;
     }
   }, [value]);
 
@@ -130,23 +172,50 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
       {...rest}
       className={`min-h-28 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 ${className ?? ""}`.trim()}
       onBlur={(event: FocusEvent<HTMLTextAreaElement>) => {
-        if (!composingRef.current && localValue !== normalizeFieldValue(value)) {
+        if (
+          !composingRef.current
+          && localValue !== normalizeFieldValue(value)
+          && localValue !== lastForwardedValueRef.current
+        ) {
+          lastForwardedValueRef.current = localValue;
           forwardCommittedChange(event.currentTarget, onChange);
         }
 
         onBlur?.(event);
       }}
       onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
-        setLocalValue(event.target.value);
+        const nextValue = event.target.value;
+
+        if (skipNextChangeRef.current) {
+          skipNextChangeRef.current = false;
+          return;
+        }
+
+        setLocalValue(nextValue);
+
+        if (composingRef.current || isNativeComposingChange(event) || nextValue === lastForwardedValueRef.current) {
+          return;
+        }
+
+        lastForwardedValueRef.current = nextValue;
 
         if (!composingRef.current) {
           onChange?.(event);
         }
       }}
       onCompositionEnd={(event: CompositionEvent<HTMLTextAreaElement>) => {
+        const committedValue = event.currentTarget.value;
+
         composingRef.current = false;
-        setLocalValue(event.currentTarget.value);
+        skipNextChangeRef.current = true;
+        setLocalValue(committedValue);
         onCompositionEnd?.(event);
+
+        if (committedValue === lastForwardedValueRef.current) {
+          return;
+        }
+
+        lastForwardedValueRef.current = committedValue;
         forwardCommittedChange(event.currentTarget, onChange);
       }}
       onCompositionStart={(event: CompositionEvent<HTMLTextAreaElement>) => {

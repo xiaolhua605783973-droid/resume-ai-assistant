@@ -62,6 +62,8 @@
 - `web`: `npm run lint` passed after delaying autosave hints and reserving status-line space to stop layout jumps while typing.
 - `web`: `npm run lint` passed after keeping autosave optimistic locally instead of replacing the draft with each persist response.
 - `web`: `npm run lint` passed after buffering IME composition inside shared `TextInput` and `TextArea` components.
+- `web`: `npm run lint` passed after hardening shared IME fields to ignore native composing changes and deduplicate post-`compositionend` commits.
+- `web`: local Playwright composition simulation on `/tasks/demo/intake` committed `电子` into the shared `TextInput` and triggered exactly one `PATCH /api/tasks/[taskId]` request.
 
 ## Bug Log
 
@@ -78,6 +80,7 @@
 | 2026-05-10 | Autosave UX | Typing in intake/resume forms could make the page jump vertically because the save hint kept appearing and disappearing | The UI rendered autosave notices as conditional blocks, and the hook exposed `isSaving` immediately on every debounced draft write | Delayed the autosave hint in `use-task-draft.ts` and rendered fixed-height status lines in intake/JD/resume pages | For autosave UX, do not mount/unmount layout-affecting status blocks on each keystroke; debounce the indicator and reserve space for transient text |
 | 2026-05-10 | IME composition | Chinese input could only keep the first pinyin chunk because the IME candidate window was interrupted mid-typing | Each autosave success replaced local draft state with the server echo, so a round-trip could overwrite controlled input state during composition | Kept autosave optimistic locally and stopped calling `setTask(response.task)` after successful draft persists | For IME-safe autosave, treat persist responses as acknowledgements unless the server actually transforms the draft |
 | 2026-05-10 | IME controlled input | Chinese input could still collapse into repeated pinyin fragments like `ddidiadiandian...` because controlled fields committed intermediate composition text | Shared `TextInput`/`TextArea` forwarded every `onChange` during IME composition, so parent state stored partial romanized input before `compositionend` | Buffered field values locally inside the shared components and only forwarded committed text on `compositionend` or blur | For IME-safe controlled fields, buffer composition locally and do not push intermediate composition strings into shared form state |
+| 2026-05-10 | IME post-commit sync | Chinese input could still duplicate committed text because some browsers emitted extra `input`/`change` events after `compositionend` | The shared fields only watched `compositionstart`/`compositionend`, so trailing native events or blur could re-forward the same committed value into parent state | Added native `isComposing` guards and per-field forwarded-value deduplication across `compositionend`, `onChange`, and `onBlur` | For IME-safe controlled fields, guard both React composition refs and native composing flags, and deduplicate committed values across all trailing input paths |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
@@ -101,6 +104,7 @@
 - Smoothed autosave UX by delaying save hints and reserving status-line space so form editing no longer causes page jumps.
 - Stopped autosave responses from replacing local draft state so Chinese IME composition is no longer interrupted while typing.
 - Buffered IME composition inside shared form fields so pinyin fragments are only committed after composition completes.
+- Hardened shared IME fields to ignore native composing changes and deduplicate post-`compositionend` commits so one committed phrase only triggers one draft update.
 - Added `web/src/server/external-analysis.ts` and switched `/api/tasks/[taskId]/analyze` to an OpenAI-compatible external provider with local fallback when env config is missing.
 - Documented external analysis env vars in `web/.env.example` and `web/README.md`.
 
