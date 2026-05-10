@@ -5,7 +5,7 @@
 - Last updated: 2026-05-10
 - Current phase: Environment ready, workflow scaffolding started
 - Current MVP: JD-driven resume decision assistant
-- Repo status: workflow docs established, git initialized on `main`, baseline commit created
+- Repo status: workflow docs established, git initialized on `main`, baseline commits created, `web/` tracked normally
 
 ## Read First
 
@@ -40,12 +40,14 @@
 
 - `web`: `npm run lint` passed with local Node path.
 - `web`: `npm run build` passed with local Node path.
+- `web`: `npm run lint` passed after replacing the nested git repository with normal tracked files.
 
 ## Bug Log
 
 | Date | Area | Symptom | Root Cause | Fix Applied | Prevention |
 | --- | --- | --- | --- | --- | --- |
 | 2026-05-10 | Local tooling | `npm run lint` failed with `spawn sh ENOENT` | PATH was overwritten with only the local Node directory and the system shell path was lost | Changed command pattern to prefix local Node onto existing PATH | Always use `PATH="<local-node>:$PATH"` instead of replacing PATH |
+| 2026-05-10 | Git structure | Root commit stored `web` as an embedded repository gitlink instead of normal source files | `create-next-app` initialized its own `.git` directory inside `web/`, and the root commit captured it as a nested repo | Remove `web/.git`, unstage the gitlink, and re-add `web/` as normal files in the root repository | After scaffolding inside an existing repo, always check for nested `.git` directories before the first commit |
 
 ## Change Log
 
@@ -57,6 +59,7 @@
 - Added `docs/DEVELOPMENT_STATUS.md`.
 - Initialized git repository with `main` as the default branch.
 - Configured git identity and created the initial baseline commit.
+- Fixed the nested git repository issue inside `web/` so root git tracks source files normally.
 
 ## Handoff Notes
 

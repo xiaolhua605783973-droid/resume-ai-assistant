@@ -27,6 +27,7 @@
 - Every meaningful bug fix must be recorded in the development status bug log.
 - Keep commits scoped and descriptive.
 - The repository has been initialized with git on the `main` branch.
+- `web/` is tracked as normal source files in the root repository, not as a submodule or nested git repository.
 
 ## Current App Surface
 
@@ -42,6 +43,7 @@
 
 - If `PATH` is overwritten instead of prefixed, `npm` may fail with `spawn sh ENOENT`.
 - Use `PATH="...:$PATH"`, not `PATH="..."`.
+- `create-next-app` may create its own `.git` directory inside `web/`; remove `web/.git` before committing the root repository, otherwise `web` is stored as a gitlink instead of normal source files.
 
 ## Open Architecture Decisions
 
