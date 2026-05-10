@@ -11,6 +11,7 @@
 - Frontend lives in `web/`.
 - Frontend stack: Next.js 16 App Router, TypeScript, Tailwind CSS v4.
 - This machine does not have global `node` or `npm`; a local Node.js toolchain is vendored in `.tools/node`.
+- Current MVP data persistence is browser-local only, using `localStorage` for a single working task draft.
 
 ## Validated Local Commands
 
@@ -38,6 +39,7 @@
   - `/tasks/demo/jd`
   - `/tasks/demo/analysis`
   - `/tasks/demo/resume`
+- The demo task routes are now functional pages backed by a shared local draft store, a deterministic JD analysis helper, and editable resume output.
 
 ## Known Operational Pitfalls
 

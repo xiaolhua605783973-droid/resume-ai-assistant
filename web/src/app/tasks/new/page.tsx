@@ -1,9 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { SectionTitle } from "@/components/section-title";
+import { useTaskDraft } from "@/hooks/use-task-draft";
 import { mvpFlow } from "@/lib/mvp-data";
 
 export default function NewTaskPage() {
+  const router = useRouter();
+  const { restartDraft } = useTaskDraft();
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#fffaf5_0%,_#fff7ed_100%)] px-6 py-10 text-slate-900">
       <section className="mx-auto grid w-full max-w-5xl gap-8 rounded-[2rem] border border-orange-100 bg-white p-8 shadow-[0_18px_60px_rgba(148,64,14,0.08)]">
@@ -27,12 +34,16 @@ export default function NewTaskPage() {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <Link
+          <button
             className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            href="/tasks/demo/intake"
+            onClick={() => {
+              restartDraft();
+              router.push("/tasks/demo/intake");
+            }}
+            type="button"
           >
             进入经历录入
-          </Link>
+          </button>
           <Link
             className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
             href="/"
