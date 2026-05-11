@@ -66,6 +66,7 @@
 - Use `PATH="...:$PATH"`, not `PATH="..."`.
 - `create-next-app` may create its own `.git` directory inside `web/`; remove `web/.git` before committing the root repository, otherwise `web` is stored as a gitlink instead of normal source files.
 - In Next.js App Router, pages using `useSearchParams` need a `Suspense` boundary to pass production build prerender checks.
+- The root `<html>` attributes should stay aligned with the Chinese UI: use `lang="zh-CN"`, and when global CSS enables `scroll-behavior: smooth`, also set `data-scroll-behavior="smooth"` on `<html>` to avoid Next.js runtime warnings.
 - External analysis returns free-form model text; always normalize and validate provider JSON before persisting it into task records.
 - `pdf-parse` needs an explicit absolute worker URL in the Next.js server runtime; relying on its default `./pdf.worker.mjs` path breaks in `.next` server chunks.
 - For PDF resume extraction, pass `pageJoiner: ""` to avoid synthetic page markers leaking into heuristics, and treat document-title lines like `Dummy PDF file` as noise rather than candidate names.

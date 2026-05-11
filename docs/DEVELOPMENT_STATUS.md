@@ -69,6 +69,8 @@
 - `web`: local Playwright check on `/tasks/demo/intake` confirmed that after one autosave cycle, deleting from the middle of `电子信息工程` kept the caret at the delete point instead of jumping to the end.
 - `web`: `npm run lint` passed after replacing the unconditional post-`compositionend` skip with value-based deduplication in shared fields.
 - `web`: local Playwright reproduction on `/tasks/demo/intake` confirmed textarea flow `回车 -> 中文输入提交 -> Delete` now deletes the character at the caret and keeps the caret in place.
+- `web`: `npm run lint` passed after aligning the root `<html>` language and smooth-scroll attributes.
+- `web`: browser/runtime check on `/tasks/demo/intake` confirmed `document.documentElement.lang === "zh-CN"`, `data-scroll-behavior === "smooth"`, and the previous hydration/scroll warnings no longer appeared in the dev log after reload.
 
 ## Bug Log
 
@@ -88,6 +90,7 @@
 | 2026-05-10 | IME post-commit sync | Chinese input could still duplicate committed text because some browsers emitted extra `input`/`change` events after `compositionend` | The shared fields only watched `compositionstart`/`compositionend`, so trailing native events or blur could re-forward the same committed value into parent state | Added native `isComposing` guards and per-field forwarded-value deduplication across `compositionend`, `onChange`, and `onBlur` | For IME-safe controlled fields, guard both React composition refs and native composing flags, and deduplicate committed values across all trailing input paths |
 | 2026-05-11 | Controlled input caret | Deleting text from the middle of an input or textarea could move the caret to the end of the field | `use-task-draft.ts` wrapped controlled draft updates in `startTransition`, but React text inputs require synchronous state updates to preserve selection reliably | Removed `startTransition` from `updateDraft` so draft edits commit synchronously while autosave remains debounced in the background | Do not put controlled text input state behind transition-priority updates; keep text edits synchronous and push only secondary work into transitions |
 | 2026-05-11 | IME textarea delete | In textarea fields, pressing `Delete` right after entering Chinese text at the start of a new paragraph could jump the caret to the end and delete the wrong character | The shared IME fix used an unconditional `skipNextChangeRef`, so when a browser or IME did not emit a trailing duplicate `change` after `compositionend`, the next real delete event was swallowed | Replaced unconditional skip-next-change logic with value-based post-composition deduplication so only duplicate trailing events are ignored | Post-composition guards must be value-aware; never consume the next user edit unless it exactly matches the just-committed composition payload |
+| 2026-05-11 | Root layout runtime warnings | The app emitted Next.js smooth-scroll warnings and hydration mismatch warnings around the root `<html>` attributes | The root layout still declared `lang="en"` even though the UI is Chinese, and smooth scrolling was enabled globally without the `data-scroll-behavior` attribute required by Next.js | Updated the root layout to use `lang="zh-CN"` and `data-scroll-behavior="smooth"` on `<html>` | Keep root layout metadata and runtime attributes aligned with the actual UI locale and global scrolling behavior |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
@@ -122,6 +125,7 @@
 - Added "Show Raw Text" toggle in Intake UI to help users verify and correct AI results.
 - Removed `startTransition` from controlled draft updates so intake/resume fields keep stable caret position during mid-text edits.
 - Replaced unconditional post-`compositionend` change skipping with value-based deduplication so textarea `Delete` works correctly after Chinese IME input.
+- Aligned root `<html>` attributes with the Chinese UI and Next.js smooth-scroll requirements to remove runtime warnings during local development.
 
 ## Handoff Notes
 
