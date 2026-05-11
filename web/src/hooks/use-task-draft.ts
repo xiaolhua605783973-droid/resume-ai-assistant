@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   analyzeTask as analyzeTaskRequest,
@@ -100,21 +100,19 @@ export const useTaskDraft = (taskId: string | null) => {
   };
 
   const updateDraft = (updater: (current: TaskDraft) => TaskDraft) => {
-    startTransition(() => {
-      setTask((current) => {
-        if (!current) {
-          return current;
-        }
+    setTask((current) => {
+      if (!current) {
+        return current;
+      }
 
-        const nextDraft = updater(current.draft);
-        const nextTask = {
-          ...current,
-          draft: nextDraft,
-        };
+      const nextDraft = updater(current.draft);
+      const nextTask = {
+        ...current,
+        draft: nextDraft,
+      };
 
-        queuePersist(nextDraft);
-        return nextTask;
-      });
+      queuePersist(nextDraft);
+      return nextTask;
     });
   };
 
