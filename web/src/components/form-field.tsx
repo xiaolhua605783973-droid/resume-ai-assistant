@@ -73,7 +73,7 @@ export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   } = props;
   const [localValue, setLocalValue] = useState(() => normalizeFieldValue(value));
   const composingRef = useRef(false);
-  const skipNextChangeRef = useRef(false);
+  const postCompositionValueRef = useRef<string | null>(null);
   const lastForwardedValueRef = useRef(normalizeFieldValue(value));
 
   useEffect(() => {
@@ -103,9 +103,13 @@ export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
       onChange={(event: ChangeEvent<HTMLInputElement>) => {
         const nextValue = event.target.value;
 
-        if (skipNextChangeRef.current) {
-          skipNextChangeRef.current = false;
-          return;
+        if (postCompositionValueRef.current !== null) {
+          const shouldSkipTrailingCompositionChange = nextValue === postCompositionValueRef.current;
+          postCompositionValueRef.current = null;
+
+          if (shouldSkipTrailingCompositionChange) {
+            return;
+          }
         }
 
         setLocalValue(nextValue);
@@ -124,7 +128,7 @@ export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
         const committedValue = event.currentTarget.value;
 
         composingRef.current = false;
-        skipNextChangeRef.current = true;
+        postCompositionValueRef.current = committedValue;
         setLocalValue(committedValue);
         onCompositionEnd?.(event);
 
@@ -156,7 +160,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   } = props;
   const [localValue, setLocalValue] = useState(() => normalizeFieldValue(value));
   const composingRef = useRef(false);
-  const skipNextChangeRef = useRef(false);
+  const postCompositionValueRef = useRef<string | null>(null);
   const lastForwardedValueRef = useRef(normalizeFieldValue(value));
 
   useEffect(() => {
@@ -186,9 +190,13 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
       onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
         const nextValue = event.target.value;
 
-        if (skipNextChangeRef.current) {
-          skipNextChangeRef.current = false;
-          return;
+        if (postCompositionValueRef.current !== null) {
+          const shouldSkipTrailingCompositionChange = nextValue === postCompositionValueRef.current;
+          postCompositionValueRef.current = null;
+
+          if (shouldSkipTrailingCompositionChange) {
+            return;
+          }
         }
 
         setLocalValue(nextValue);
@@ -207,7 +215,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
         const committedValue = event.currentTarget.value;
 
         composingRef.current = false;
-        skipNextChangeRef.current = true;
+        postCompositionValueRef.current = committedValue;
         setLocalValue(committedValue);
         onCompositionEnd?.(event);
 

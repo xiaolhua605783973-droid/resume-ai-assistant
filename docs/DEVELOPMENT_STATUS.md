@@ -67,6 +67,8 @@
 - `web`: local Playwright composition simulation on `/tasks/demo/intake` committed `电子` into the shared `TextInput` and triggered exactly one `PATCH /api/tasks/[taskId]` request.
 - `web`: `npm run lint` passed after removing `startTransition` from controlled draft updates.
 - `web`: local Playwright check on `/tasks/demo/intake` confirmed that after one autosave cycle, deleting from the middle of `电子信息工程` kept the caret at the delete point instead of jumping to the end.
+- `web`: `npm run lint` passed after replacing the unconditional post-`compositionend` skip with value-based deduplication in shared fields.
+- `web`: local Playwright reproduction on `/tasks/demo/intake` confirmed textarea flow `回车 -> 中文输入提交 -> Delete` now deletes the character at the caret and keeps the caret in place.
 
 ## Bug Log
 
@@ -85,6 +87,7 @@
 | 2026-05-10 | IME controlled input | Chinese input could still collapse into repeated pinyin fragments like `ddidiadiandian...` because controlled fields committed intermediate composition text | Shared `TextInput`/`TextArea` forwarded every `onChange` during IME composition, so parent state stored partial romanized input before `compositionend` | Buffered field values locally inside the shared components and only forwarded committed text on `compositionend` or blur | For IME-safe controlled fields, buffer composition locally and do not push intermediate composition strings into shared form state |
 | 2026-05-10 | IME post-commit sync | Chinese input could still duplicate committed text because some browsers emitted extra `input`/`change` events after `compositionend` | The shared fields only watched `compositionstart`/`compositionend`, so trailing native events or blur could re-forward the same committed value into parent state | Added native `isComposing` guards and per-field forwarded-value deduplication across `compositionend`, `onChange`, and `onBlur` | For IME-safe controlled fields, guard both React composition refs and native composing flags, and deduplicate committed values across all trailing input paths |
 | 2026-05-11 | Controlled input caret | Deleting text from the middle of an input or textarea could move the caret to the end of the field | `use-task-draft.ts` wrapped controlled draft updates in `startTransition`, but React text inputs require synchronous state updates to preserve selection reliably | Removed `startTransition` from `updateDraft` so draft edits commit synchronously while autosave remains debounced in the background | Do not put controlled text input state behind transition-priority updates; keep text edits synchronous and push only secondary work into transitions |
+| 2026-05-11 | IME textarea delete | In textarea fields, pressing `Delete` right after entering Chinese text at the start of a new paragraph could jump the caret to the end and delete the wrong character | The shared IME fix used an unconditional `skipNextChangeRef`, so when a browser or IME did not emit a trailing duplicate `change` after `compositionend`, the next real delete event was swallowed | Replaced unconditional skip-next-change logic with value-based post-composition deduplication so only duplicate trailing events are ignored | Post-composition guards must be value-aware; never consume the next user edit unless it exactly matches the just-committed composition payload |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
@@ -118,6 +121,7 @@
 - Initialized LLM-based resume parsing architecture.
 - Added "Show Raw Text" toggle in Intake UI to help users verify and correct AI results.
 - Removed `startTransition` from controlled draft updates so intake/resume fields keep stable caret position during mid-text edits.
+- Replaced unconditional post-`compositionend` change skipping with value-based deduplication so textarea `Delete` works correctly after Chinese IME input.
 
 ## Handoff Notes
 

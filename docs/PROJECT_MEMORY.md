@@ -74,6 +74,7 @@
 - Do not wrap controlled text-field state updates in `startTransition`; draft edits need synchronous state commits or React may destabilize caret and selection while the user types or deletes in the middle of text.
 - Shared text inputs need local composition buffering; even without server echo, controlled `onChange` updates can still commit half-finished pinyin into parent state before `compositionend`.
 - Some browsers still emit a trailing `input` or `change` after `compositionend`; shared fields need to check the native `isComposing` flag and deduplicate already-forwarded values so `compositionend`, trailing input, and blur do not re-commit the same IME text.
+- For IME-safe textareas, do not blindly skip the next change after `compositionend`; only suppress a trailing duplicate event when its value matches the just-committed composition text, otherwise the user's next real `Delete` or edit can be swallowed and the caret may jump to the end.
 
 ## Open Architecture Decisions
 
