@@ -12,7 +12,9 @@
 - Frontend stack: Next.js 16 App Router, TypeScript, Tailwind CSS v4.
 - This machine does not have global `node` or `npm`; a local Node.js toolchain is vendored in `.tools/node`.
 - Current MVP task persistence is backend JSON file storage under `web/.data/tasks`.
-- Resume import parsing currently uses `mammoth` for DOCX and `pdf-parse` for PDF.
+- Resume import parsing supports dual-mode:
+  - **Heuristic mode**: Uses `mammoth` (DOCX), `pdf-parse` (PDF) and regex for local deterministic extraction.
+  - **LLM mode**: When `ANALYSIS_API_KEY` is present, uses LLM to structure extracted text into precise JSON schema.
 - External JD/match/resume analysis now supports an OpenAI-compatible Chat Completions endpoint via environment variables.
 
 ## Validated Local Commands
