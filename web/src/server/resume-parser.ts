@@ -91,6 +91,94 @@ const isLikelyNameLine = (line: string) => {
   return nameCandidatePattern.test(normalized);
 };
 
+export const parseResumeWithLLM = async (content: string, config: { baseUrl: string; apiKey: string; model: string; path: string }) => {
+  const prompt = `你是一个专业的简历解析助手。请将以下简历文本解析为结构化的 JSON 格式。
+请务必保持简历的原始意图，如果某项信息在原文中不存在，请留空字符串。
+
+简历文本如下：
+---
+${content}
+---
+
+请返回以下 JSON 格式：
+{
+  "basicInfo": {
+    "name": "姓名",
+    "phone": "手机号",
+    "email": "邮箱",
+    "educationLevel": "学历（博士/硕士/本科/大专等）",
+    "major": "专业",
+    "graduationDate": "毕业时间",
+    "workYears": "工作年限",
+    "city": "所在城市"
+  },
+  "experiences": [
+    {
+      "companyName": "公司名",
+      "roleName": "岗位名",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "responsibilityText": "主要职责，多项请用分号分隔",
+      "achievementText": "主要成就，多项请用分号分隔"
+    }
+  ],
+  "projects": [
+    {
+      "projectName": "项目名",
+      "roleName": "角色",
+      "projectPeriod": "项目周期",
+      "backgroundText": "项目背景",
+      "contributionText": "个人贡献",
+      "outcomeText": "项目成果"
+    }
+  ],
+  "skills": [
+    {
+      "skillName": "技能名称",
+      "proficiency": "熟练程度"
+    }
+  ]
+}
+
+注意：仅返回 JSON 格式，不要包含任何 Markdown 代码块包裹，也不要包含解释性文字。`;
+
+  const response = await fetch(`${config.baseUrl}${config.path || "/chat/completions"}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`External analysis API error: ${response.status} ${errorText}`);
+  }
+
+  const data = await response.json();
+  const rawContent = data.choices?.[0]?.message?.content;
+  const textContent = typeof rawContent === "string" ? rawContent : rawContent?.[0]?.text;
+
+  if (!textContent) {
+    throw new Error("Empty response from analysis API.");
+  }
+
+  try {
+    // 处理可能存在的 Markdown 代码块包裹
+    const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+    const jsonString = jsonMatch ? jsonMatch[0] : textContent;
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Failed to parse LLM response as JSON:", textContent);
+    throw new Error("Failed to parse analysis result.");
+  }
+};
+
 const getPdfWorkerUrl = () =>
   pathToFileURL(path.join(process.cwd(), "node_modules", "pdfjs-dist", "legacy", "build", "pdf.worker.mjs")).href;
 

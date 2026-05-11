@@ -30,6 +30,7 @@
 - Connected resume import parsing for TXT, DOCX, and PDF uploads.
 - Added an OpenAI-compatible external analysis provider for the analyze route.
 - Added environment-driven fallback so local development can still use deterministic analysis when no external API config is present.
+- Enhanced resume intake with LLM structured parsing and raw text preview side-by-side.
 
 ### In Progress
 
@@ -107,6 +108,12 @@
 - Hardened shared IME fields to ignore native composing changes and deduplicate post-`compositionend` commits so one committed phrase only triggers one draft update.
 - Added `web/src/server/external-analysis.ts` and switched `/api/tasks/[taskId]/analyze` to an OpenAI-compatible external provider with local fallback when env config is missing.
 - Documented external analysis env vars in `web/.env.example` and `web/README.md`.
+- Enhanced resume intake with LLM structured parsing and raw text preview side-by-side.
+
+### 2026-05-11
+
+- Initialized LLM-based resume parsing architecture.
+- Added "Show Raw Text" toggle in Intake UI to help users verify and correct AI results.
 
 ## Handoff Notes
 

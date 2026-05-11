@@ -31,6 +31,9 @@ function IntakePageContent() {
   const searchParams = useSearchParams();
   const taskId = searchParams.get("taskId");
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [rawText, setRawText] = useState<string | null>(null);
+  const [showRaw, setShowRaw] = useState(false);
+
   const {
     draft,
     loaded,
@@ -132,7 +135,9 @@ function IntakePageContent() {
                   const response = await importResume(file);
 
                   if (response?.parsedPreview) {
-                    setUploadMessage(`已解析：${file.name}，已将关键信息回填到当前任务。`);
+                    setRawText(response.parsedPreview);
+                    setShowRaw(true);
+                    setUploadMessage(`已解析：${file.name}，已将关键信息回填到当前任务，可对照原文检查。`);
                   }
 
                   event.target.value = "";
@@ -146,7 +151,29 @@ function IntakePageContent() {
           </div>
           {uploadMessage ? <p className="text-sm text-cyan-900">{uploadMessage}</p> : null}
           {error ? <p className="text-sm text-rose-700">{error}</p> : null}
-          {isParsingResume ? <p className="text-sm text-cyan-900">正在解析简历，请稍候...</p> : null}
+          {isParsingResume ? <p className="text-sm text-cyan-900">正在通过 AI 深度解析简历，请稍候...（可能需要 10-20 秒）</p> : null}
+          
+          {rawText && (
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                onClick={() => setShowRaw(!showRaw)}
+                className="text-sm font-medium text-cyan-700 underline underline-offset-4"
+              >
+                {showRaw ? "收起简历原文" : "查看简历原文"}
+              </button>
+            </div>
+          )}
+
+          {showRaw && rawText && (
+            <div className="mt-4 max-h-[400px] overflow-y-auto rounded-xl border border-cyan-200 bg-white p-4 font-mono text-xs leading-relaxed text-slate-700 shadow-inner">
+              <div className="mb-2 flex items-center justify-between border-bottom pb-2 border-slate-100">
+                <span className="font-bold text-slate-400 uppercase tracking-wider">简历解析原文预览</span>
+                <span className="text-[10px] text-slate-400">对照原文可更准确地进行人工修正</span>
+              </div>
+              <pre className="whitespace-pre-wrap">{rawText}</pre>
+            </div>
+          )}
+
           <p aria-live="polite" className="min-h-5 text-sm text-slate-500">
             {isSaving ? "草稿正在同步到后端..." : null}
           </p>
