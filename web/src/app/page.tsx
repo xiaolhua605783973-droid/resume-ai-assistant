@@ -12,7 +12,7 @@ export default function Home() {
 
       <div className="relative mx-auto max-w-7xl px-6 pt-32 pb-24">
         {/* Navbar-ish Logo */}
-        <nav className="absolute top-10 left-6 flex items-center gap-2">
+        <nav className="absolute top-10 left-6 flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-700">
            <div className="h-8 w-8 rounded-lg bg-slate-950 flex items-center justify-center shadow-lg shadow-slate-200">
               <span className="text-white font-bold text-xs">AI</span>
            </div>
@@ -22,7 +22,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
           <div className="flex-1 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
@@ -30,16 +30,19 @@ export default function Home() {
                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
               让每一份简历，<br />
-              都为 <span className="text-cyan-600">目标岗位</span> 而生。
+              都为 <span className="relative inline-block text-cyan-600">
+                目标岗位
+                <span className="absolute bottom-1 left-0 h-[6px] w-full bg-cyan-100/60 -z-10 animate-in zoom-in-x duration-1000 delay-1000 fill-mode-both" />
+              </span> 而生。
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
               不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
               <Link 
                 href="/tasks/new" 
                 className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
@@ -61,24 +64,35 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex-1 w-full max-w-2xl animate-in fade-in slide-in-from-right-12 duration-1000 delay-500">
-            <div className="relative group">
+          <div className="flex-1 w-full max-w-2xl">
+            <div className="relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-700">
+              {/* Floating Badge on Video */}
+              <div className="absolute -top-4 -right-4 z-20 rounded-2xl bg-white p-4 shadow-2xl border border-slate-100 animate-bounce duration-[3000ms]">
+                 <div className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-md mb-1 uppercase tracking-tighter">AI Analysis</div>
+                 <div className="text-slate-900 font-bold text-sm">Match Score: 96%</div>
+              </div>
+
               {/* Browser Window Mockup */}
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(15,23,42,0.1)] transition-transform duration-500 group-hover:-translate-y-2">
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(15,23,42,0.1)] transition-all duration-700 group-hover:-translate-y-4 group-hover:rotate-1 group-hover:shadow-cyan-100/50">
                 <div className="flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
-                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
-                  <div className="ml-4 h-4 w-48 rounded-md bg-slate-100" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  <div className="ml-4 h-4 w-48 rounded-md bg-slate-100 animate-pulse" />
                 </div>
                 <div className="aspect-[16/10] bg-slate-50 p-4">
-                  <div className="relative h-full w-full rounded-lg border-2 border-dashed border-slate-200 bg-white/50 flex flex-col items-center justify-center gap-4 group/video cursor-pointer">
-                    <div className="h-16 w-16 rounded-full bg-cyan-600/10 flex items-center justify-center text-cyan-600 transition-transform duration-300 group-hover/video:scale-110 shadow-lg shadow-cyan-50">
+                  <div className="relative h-full w-full rounded-lg border-2 border-dashed border-slate-200 bg-white/50 flex flex-col items-center justify-center gap-4 group/video cursor-pointer overflow-hidden">
+                    {/* Pulsing rings for play button */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                       <div className="h-24 w-24 rounded-full bg-cyan-400/10 animate-ping duration-[2000ms]" />
+                    </div>
+
+                    <div className="h-16 w-16 rounded-full bg-cyan-600/10 flex items-center justify-center text-cyan-600 transition-all duration-300 group-hover/video:scale-110 group-hover/video:bg-cyan-600 group-hover/video:text-white shadow-lg shadow-cyan-50 z-10">
                        <svg className="h-8 w-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5.14v14c0 .86.84 1.4 1.58.97l11-7a1 1 0 000-1.72l-11-7a1 1 0 00-1.58.75z" />
                        </svg>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center z-10">
                       <p className="text-sm font-bold text-slate-900">观看演示视频</p>
                       <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">ResuMate AI Workflow • 45s</p>
                     </div>
@@ -87,8 +101,8 @@ export default function Home() {
               </div>
 
               {/* Decorative elements behind the video */}
-              <div className="absolute -bottom-6 -right-6 -z-10 h-64 w-64 rounded-full bg-cyan-100/50 blur-3xl transition-opacity group-hover:opacity-100 opacity-0" />
-              <div className="absolute -top-6 -left-6 -z-10 h-64 w-64 rounded-full bg-blue-100/30 blur-3xl transition-opacity group-hover:opacity-100 opacity-0" />
+              <div className="absolute -bottom-10 -right-10 -z-10 h-72 w-72 rounded-full bg-cyan-100/50 blur-3xl transition-opacity group-hover:opacity-100 opacity-50 duration-700" />
+              <div className="absolute -top-10 -left-10 -z-10 h-72 w-72 rounded-full bg-blue-100/30 blur-3xl transition-opacity group-hover:opacity-100 opacity-30 duration-700" />
             </div>
           </div>
         </section>
