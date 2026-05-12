@@ -37,13 +37,13 @@
 ## Current App Surface
 
 - Route skeletons exist for:
-  - `/`
+  - `/` (Redesigned as clean, business-focused hero page)
   - `/tasks/new`
-  - `/tasks/demo/intake`
-  - `/tasks/demo/jd`
-  - `/tasks/demo/analysis`
-  - `/tasks/demo/resume`
-- The demo task routes are now functional pages backed by server-created `taskId` records, backend draft persistence, server-side deterministic analysis, resume parsing upload, and editable resume output.
+  - `/tasks/demo/intake` (Side-by-side raw text/form layout)
+  - `/tasks/demo/jd` (Card-based info matrix)
+  - `/tasks/demo/analysis` (Dark-mode immersive report)
+  - `/tasks/demo/resume` (A4 canvas preview + editor)
+- All pages are unified by a high-polish "ResuMate Copilot" visual theme using Tailwind CSS v4 and a shared `GlobalStepper` for context.
 
 ## Backend Boundaries
 

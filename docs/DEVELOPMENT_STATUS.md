@@ -31,6 +31,9 @@
 - Added an OpenAI-compatible external analysis provider for the analyze route.
 - Added environment-driven fallback so local development can still use deterministic analysis when no external API config is present.
 - Enhanced resume intake with LLM structured parsing and raw text preview side-by-side.
+- Redesigned the entire task lifecycle UI (Steps 1-5) with a high-polish, high-contrast "Co-pilot" visual language.
+- Unified pages with a shared `GlobalStepper` component and refined card/typography system using Tailwind CSS v4.
+- Overhauled the product home page with a clean, business-focused "ResuMate Copilot" layout.
 
 ### In Progress
 
@@ -73,6 +76,9 @@
 - `web`: browser/runtime check on `/tasks/demo/intake` confirmed `document.documentElement.lang === "zh-CN"`, `data-scroll-behavior === "smooth"`, and the previous hydration/scroll warnings no longer appeared in the dev log after reload.
 - `web`: `npm run lint` passed after rebuilding `/tasks/demo/resume` around a dedicated A4 preview canvas and print-only export styles.
 - `web`: browser check on `/tasks/demo/resume?taskId=67fe2af1-ef8b-45ac-a063-5a557550639c` confirmed the export page now renders one `.resume-paper` preview canvas, keeps the `导出 PDF` button, and presents cleaned section text without raw markdown markers.
+- `web`: `npm run lint` passed after redesigning all task pages and the home page for visual consistency.
+- `web`: manual browser walkthrough confirmed `GlobalStepper` correctly tracks progress from Step 1 (New) to Step 5 (Resume).
+- `web`: `npm run lint` passed after fixing a nested JSX tag error in `analysis/page.tsx` that was breaking the build.
 
 ## Bug Log
 
@@ -96,6 +102,7 @@
 | 2026-05-12 | Resume PDF demo quality | Browser PDF export looked like a raw product screen instead of a presentation-ready resume | The export flow printed the editing page directly, with no dedicated A4 document canvas or print-only layout | Reworked `/tasks/demo/resume` into editor + A4 preview and added print styles that hide editing chrome while printing only the resume paper | For browser-PDF MVPs, separate document presentation from editing controls and treat print CSS as part of the export feature |
 | 2026-05-12 | Intake page compilation | The app stopped compiling because `/tasks/demo/intake` had broken JSX nesting near the footer and raw-text aside | A local layout refactor left container tags misaligned, so Turbopack failed to parse the page and blocked validation of unrelated features | Restored the missing container boundaries without changing the form behavior | When reshaping large JSX trees, validate the page immediately so structural mismatches do not block later work |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
+| 2026-05-12 | Analysis page structure | Build error `Expression expected` (212:9) in `analysis/page.tsx` | Redesign refactor left duplicate closing tags at the bottom of the file | Removed redundant JSX closing tags and fixed the nesting structure | Always double-check block nesting after large scale UI overwrites, especially near component boundaries |
 
 ## Change Log
 
