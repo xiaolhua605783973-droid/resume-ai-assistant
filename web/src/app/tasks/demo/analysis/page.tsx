@@ -108,11 +108,15 @@ function AnalysisPageContent() {
           <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-64 w-64 rounded-full bg-purple-600/10 blur-[100px]" />
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
-            <div className="max-w-2xl">
+            <div className="max-w-2xl flex items-center gap-8">
+               <div className="flex flex-col items-center justify-center h-32 w-32 rounded-full border-[6px] border-cyan-400 bg-cyan-950 shadow-[0_0_40px_rgba(34,211,238,0.3)]">
+                 <span className="text-3xl font-black text-white">{analysis.matchScoreLabel.match(/\d+/) ? `${analysis.matchScoreLabel.match(/\d+/)?.[0]}%` : 'N/A'}</span>
+                 <span className="text-[10px] font-bold text-cyan-400 mt-1 uppercase tracking-widest">Match</span>
+               </div>
                <SectionTitle
                   eyebrow="AI MATCH REPORT"
                   title="简历匹配度深度诊断"
-                  description={analysis.matchScoreLabel}
+                  description={analysis.matchScoreLabel.replace(/\d+%/, '')}
                 />
             </div>
             <div className="flex items-center gap-4">

@@ -76,10 +76,26 @@ function JobDescriptionPageContent() {
           </div>
 
           <div className="grid gap-6">
-            <FormField
-              hint="建议包含岗位职责、任职要求、加分项等完整内容。"
-              label="目标岗位 JD 原文"
-            >
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-slate-800">目标岗位 JD 原文</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateDraft((current) => ({
+                      ...current,
+                      jdText: "岗位职责：\n1. 负责AI相关产品的规划与设计，推动产品从0到1或从1到10的演进；\n2. 深入理解大模型能力边界，结合业务场景探索AI产品化落地机会；\n3. 与算法、研发团队紧密合作，推进模型效果评估和产品迭代；\n4. 关注行业动态，持续跟踪AIGC前沿技术和竞品策略。\n\n任职要求：\n1. 本科及以上学历，3年以上互联网产品经理经验，有AI/大模型/搜索推荐相关产品经验者优先；\n2. 对AIGC有强烈兴趣，深度体验过主流AI产品；\n3. 具备极强的逻辑思维能力和数据敏感度，能通过数据发现问题并驱动产品优化；\n4. 优秀的沟通协调能力与抗压能力，能独立推动复杂跨团队项目落地。",
+                      jdAnalysis: null,
+                      matchAnalysis: null,
+                      resumeDraft: null,
+                    }));
+                  }}
+                  className="text-[11px] font-bold text-cyan-600 bg-cyan-50 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition-colors"
+                >
+                  💡 一键填入「AI产品经理」JD 示例
+                </button>
+              </div>
+              <p className="text-xs text-slate-500">建议包含岗位职责、任职要求、加分项等完整内容。</p>
               <TextArea
                 className="min-h-64 rounded-2xl border-slate-200 bg-slate-50/30 p-5 focus:bg-white focus:ring-4 focus:ring-cyan-500/10 transition-all font-mono text-sm leading-relaxed"
                 onChange={(event) => {
@@ -95,7 +111,7 @@ function JobDescriptionPageContent() {
                 placeholder="在此粘贴岗位 JD..."
                 value={draft.jdText}
               />
-            </FormField>
+            </div>
 
             <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
               <Link
