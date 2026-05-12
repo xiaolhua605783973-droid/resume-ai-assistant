@@ -63,12 +63,12 @@ function JobDescriptionPageContent() {
                 {isSaving ? (
                   <span className="flex items-center gap-1.5 text-cyan-600 font-bold">
                     <span className="h-1 w-1 animate-ping rounded-full bg-cyan-500" />
-                    正在同步草稿...
+                    正在自动缓存...
                   </span>
                 ) : (
                   <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
                     <span className="h-1 w-1 rounded-full bg-emerald-500" />
-                    已自动保存
+                    草稿已自动缓存 (本地)
                   </span>
                 )}
               </div>
