@@ -20,84 +20,46 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <section className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-          <div className="flex-1 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 opacity-0 animate-reveal-up">
-               <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-               </span>
-               <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 opacity-0 animate-reveal-up delay-150">
-              让每一份简历，<br />
-              都为 <span className="relative inline-block text-cyan-600">
-                目标岗位
-                <span className="absolute bottom-2 left-0 h-[8px] bg-cyan-100 -z-10 opacity-0 animate-draw-line delay-1000" />
-              </span> 而生。
-            </h1>
-
-            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 opacity-0 animate-reveal-up delay-300">
-              不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center gap-6 opacity-0 animate-reveal-up delay-500">
-              <Link 
-                href="/tasks/new" 
-                className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
-              >
-                <span className="relative flex items-center">
-                  立即开始 AI 优化
-                  <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-                  </svg>
-                </span>
-              </Link>
-              
-              <Link 
-                href="/tasks/demo/intake?taskId=demo-task-id" 
-                className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
-              >
-                查看演示案例
-              </Link>
-            </div>
+        <section className="max-w-4xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 opacity-0 animate-reveal-up">
+             <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+             </span>
+             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
           </div>
 
-          <div className="flex-1 w-full max-w-2xl">
-            <div className="relative group opacity-0 animate-reveal-right delay-700">
-              {/* Browser Window Mockup */}
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(15,23,42,0.1)] transition-all duration-700 group-hover:-translate-y-4 group-hover:rotate-1 group-hover:shadow-cyan-100/50">
-                <div className="flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
-                  <div className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                  <div className="ml-4 h-4 w-48 rounded-md bg-slate-100 animate-pulse" />
-                </div>
-                <div className="aspect-[16/10] bg-slate-50 p-4">
-                  <div className="relative h-full w-full rounded-lg border-2 border-dashed border-slate-200 bg-white/50 flex flex-col items-center justify-center gap-4 group/video cursor-pointer overflow-hidden">
-                    {/* Pulsing rings for play button */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                       <div className="h-24 w-24 rounded-full bg-cyan-400/10 animate-ping duration-[2000ms]" />
-                    </div>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 opacity-0 animate-reveal-up delay-150">
+            让每一份简历，<br />
+            都为 <span className="relative inline-block text-cyan-600">
+              目标岗位
+              <span className="absolute bottom-2 left-0 h-[8px] bg-cyan-100 -z-10 opacity-0 animate-draw-line delay-1000" />
+            </span> 而生。
+          </h1>
 
-                    <div className="h-16 w-16 rounded-full bg-cyan-600/10 flex items-center justify-center text-cyan-600 transition-all duration-300 group-hover/video:scale-110 group-hover/video:bg-cyan-600 group-hover/video:text-white shadow-lg shadow-cyan-50 z-10">
-                       <svg className="h-8 w-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5.14v14c0 .86.84 1.4 1.58.97l11-7a1 1 0 000-1.72l-11-7a1 1 0 00-1.58.75z" />
-                       </svg>
-                    </div>
-                    <div className="text-center z-10">
-                      <p className="text-sm font-bold text-slate-900">观看演示视频</p>
-                      <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">ResuMate AI Workflow • 45s</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mb-12 opacity-0 animate-reveal-up delay-300">
+            不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
+          </p>
 
-              {/* Decorative elements behind the video */}
-              <div className="absolute -bottom-10 -right-10 -z-10 h-72 w-72 rounded-full bg-cyan-100/50 blur-3xl transition-opacity group-hover:opacity-100 opacity-50 duration-700" />
-              <div className="absolute -top-10 -left-10 -z-10 h-72 w-72 rounded-full bg-blue-100/30 blur-3xl transition-opacity group-hover:opacity-100 opacity-30 duration-700" />
-            </div>
+          <div className="flex flex-col sm:flex-row items-center gap-6 opacity-0 animate-reveal-up delay-500">
+            <Link 
+              href="/tasks/new" 
+              className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
+            >
+              <span className="relative flex items-center">
+                立即开始 AI 优化
+                <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                </svg>
+              </span>
+            </Link>
+            
+            <Link 
+              href="/tasks/demo/intake?taskId=demo-task-id" 
+              className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
+            >
+              查看演示案例
+            </Link>
           </div>
         </section>
 
