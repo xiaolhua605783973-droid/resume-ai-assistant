@@ -21,6 +21,11 @@ html {
   scroll-behavior: smooth;
 }
 
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -32,4 +37,54 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  body {
+    min-height: auto;
+  }
+
+  .resume-page {
+    min-height: auto;
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+
+  .resume-layout {
+    display: block !important;
+    max-width: none !important;
+    gap: 0 !important;
+  }
+
+  .resume-editor-panel,
+  .resume-actions-panel,
+  .resume-screen-note,
+  .nextjs-portal,
+  [data-next-badge-root] {
+    display: none !important;
+  }
+
+  .resume-print-stage {
+    display: block !important;
+  }
+
+  .resume-paper {
+    max-width: none !important;
+    min-height: auto !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

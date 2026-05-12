@@ -106,175 +106,229 @@ function IntakePageContent() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto grid w-full max-w-5xl gap-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
-        <SectionTitle
-          eyebrow="Step 2"
-          title="经历录入与简历解析确认"
-          description="当前会把草稿保存到后端任务里。你可以先手动录入，也可以上传简历做初步解析。"
-        />
-
-        <div className="rounded-[1.5rem] border border-orange-200 bg-orange-50 p-5 text-sm leading-7 text-orange-900">
-          当前信息完整度：<span className="font-semibold">{completion}%</span>。填写越完整，后面的 JD 拆解和匹配判断越稳定。
-        </div>
-
-        <div className="grid gap-4 rounded-[1.5rem] border border-dashed border-cyan-300 bg-cyan-50 p-5">
-          <div className="flex flex-wrap items-center gap-4">
-            <label className="rounded-full border border-cyan-300 px-4 py-2 text-sm font-semibold text-cyan-900">
-              导入旧简历
-              <input
-                accept=".txt,.pdf,.docx"
-                className="hidden"
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-
-                  if (!file) {
-                    return;
-                  }
-
-                  const response = await importResume(file);
-
-                  if (response?.parsedPreview) {
-                    setRawText(response.parsedPreview);
-                    setShowRaw(true);
-                    setUploadMessage(`已解析：${file.name}，已将关键信息回填到当前任务，可对照原文检查。`);
-                  }
-
-                  event.target.value = "";
-                }}
-                type="file"
-              />
-            </label>
-            <span className="text-sm text-cyan-900">
-              支持 TXT、DOCX、PDF。当前为启发式解析，可导入后人工修正。
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      {/* 顶部进度条 */}
+      <nav className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-8">
+            <h1 className="text-lg font-bold tracking-tight text-slate-950">AI 求职全链路</h1>
+            <div className="hidden h-1.5 w-48 overflow-hidden rounded-full bg-slate-100 md:block">
+              <div className="h-full w-1/2 rounded-full bg-cyan-500 transition-all duration-500" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-sm font-medium text-slate-500">
+            <span className="flex items-center gap-2 text-cyan-600">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-100 text-[10px] font-bold">1</span>
+              任务创建
+            </span>
+            <span className="h-px w-4 bg-slate-200" />
+            <span className="flex items-center gap-2 text-slate-900">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-950 text-[10px] font-bold text-white">2</span>
+              简历同步
+            </span>
+            <span className="h-px w-4 bg-slate-200" />
+            <span className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold">3</span>
+              匹配分析
             </span>
           </div>
-          {uploadMessage ? <p className="text-sm text-cyan-900">{uploadMessage}</p> : null}
-          {error ? <p className="text-sm text-rose-700">{error}</p> : null}
-          {isParsingResume ? <p className="text-sm text-cyan-900">正在通过 AI 深度解析简历，请稍候...（可能需要 10-20 秒）</p> : null}
-          
-          {rawText && (
-            <div className="mt-2 flex items-center gap-3">
-              <button
-                onClick={() => setShowRaw(!showRaw)}
-                className="text-sm font-medium text-cyan-700 underline underline-offset-4"
-              >
-                {showRaw ? "收起简历原文" : "查看简历原文"}
-              </button>
-            </div>
-          )}
-
-          {showRaw && rawText && (
-            <div className="mt-4 max-h-[400px] overflow-y-auto rounded-xl border border-cyan-200 bg-white p-4 font-mono text-xs leading-relaxed text-slate-700 shadow-inner">
-              <div className="mb-2 flex items-center justify-between border-bottom pb-2 border-slate-100">
-                <span className="font-bold text-slate-400 uppercase tracking-wider">简历解析原文预览</span>
-                <span className="text-[10px] text-slate-400">对照原文可更准确地进行人工修正</span>
-              </div>
-              <pre className="whitespace-pre-wrap">{rawText}</pre>
-            </div>
-          )}
-
-          <p aria-live="polite" className="min-h-5 text-sm text-slate-500">
-            {isSaving ? "草稿正在同步到后端..." : null}
-          </p>
         </div>
+      </nav>
 
-        <article className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 md:grid-cols-2">
-          {basicFields.map((field) => (
-            <FormField key={field.key} hint={field.hint} label={field.label}>
-              <TextInput
-                onChange={(event) => updateBasic(field.key, event.target.value)}
-                placeholder={`请输入${field.label}`}
-                value={draft.basicInfo[field.key]}
+      <div className="mx-auto flex max-w-[1600px] gap-6 p-6">
+        {/* 左侧：表单录入区 */}
+        <section className={`flex-1 transition-all duration-300 ${showRaw ? "max-w-[calc(100%-450px)]" : "max-w-4xl mx-auto"}`}>
+          <div className="grid gap-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+            <div className="flex items-start justify-between gap-4">
+              <SectionTitle
+                eyebrow="Step 2"
+                title="经历录入与解析确认"
+                description="请校验解析结果，补充关键信息。信息越完整，后期的匹配分析就越精准。"
               />
-            </FormField>
-          ))}
-        </article>
-
-        <section className="grid gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-950">工作 / 实习经历</h2>
-            <button
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-              onClick={() => {
-                updateDraft((current) => ({
-                  ...current,
-                  experiences: [
-                    ...current.experiences,
-                    {
-                      id: `experience-${Date.now()}`,
-                      companyName: "",
-                      roleName: "",
-                      startDate: "",
-                      endDate: "",
-                      responsibilityText: "",
-                      achievementText: "",
-                    },
-                  ],
-                }));
-              }}
-              type="button"
-            >
-              添加经历
-            </button>
-          </div>
-
-          {draft.experiences.map((item, index) => (
-            <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-2">
-              <p className="md:col-span-2 text-sm font-semibold text-orange-700">经历 0{index + 1}</p>
-              <FormField label="公司名">
-                <TextInput onChange={(event) => updateExperience(item.id, "companyName", event.target.value)} value={item.companyName} />
-              </FormField>
-              <FormField label="岗位名称">
-                <TextInput onChange={(event) => updateExperience(item.id, "roleName", event.target.value)} value={item.roleName} />
-              </FormField>
-              <FormField label="开始时间">
-                <TextInput onChange={(event) => updateExperience(item.id, "startDate", event.target.value)} value={item.startDate} />
-              </FormField>
-              <FormField label="结束时间">
-                <TextInput onChange={(event) => updateExperience(item.id, "endDate", event.target.value)} value={item.endDate} />
-              </FormField>
-              <div className="md:col-span-2">
-                <FormField label="职责描述" hint="写你负责了什么、推进了什么、协作了哪些对象。">
-                  <TextArea onChange={(event) => updateExperience(item.id, "responsibilityText", event.target.value)} value={item.responsibilityText} />
-                </FormField>
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex h-9 items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-500 border border-slate-100">
+                  {isSaving ? (
+                    <span className="flex items-center gap-1.5 text-cyan-600">
+                      <span className="h-1 w-1 animate-ping rounded-full bg-cyan-500" />
+                      正在实时保存...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-emerald-600">
+                      <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                      草稿已同步至服务器
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="md:col-span-2">
-                <FormField label="成果描述" hint="尽量写出结果数字、效率提升、业务影响。">
-                  <TextArea onChange={(event) => updateExperience(item.id, "achievementText", event.target.value)} value={item.achievementText} />
-                </FormField>
+            </div>
+
+            <div className="grid gap-4 rounded-[1.5rem] border border-dashed border-cyan-200 bg-cyan-50/50 p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <label className="group flex cursor-pointer items-center gap-2 rounded-full bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-cyan-700 active:scale-95 shadow-lg shadow-cyan-200">
+                    <span>导入旧简历</span>
+                    <input
+                      accept=".txt,.pdf,.docx"
+                      className="hidden"
+                      onChange={async (event) => {
+                        const file = event.target.files?.[0];
+                        if (!file) return;
+                        const response = await importResume(file);
+                        if (response?.parsedPreview) {
+                          setRawText(response.parsedPreview);
+                          setShowRaw(true);
+                          setUploadMessage(`已解析 ${file.name}，可对照右侧原文检查。`);
+                        }
+                        event.target.value = "";
+                      }}
+                      type="file"
+                    />
+                  </label>
+                  <span className="max-w-xs text-xs leading-relaxed text-cyan-800/70">
+                    支持 TXT, PDF, DOCX。AI 将自动提取基础信息、工作及项目经历。
+                  </span>
+                </div>
+                {rawText && (
+                  <button
+                    onClick={() => setShowRaw(!showRaw)}
+                    className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all ${
+                      showRaw 
+                      ? "bg-slate-900 text-white shadow-lg shadow-slate-200" 
+                      : "bg-white text-slate-900 border border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    {showRaw ? "隐藏原文" : "对照原文"}
+                  </button>
+                )}
               </div>
+              
+              {uploadMessage || error || isParsingResume ? (
+                <div className="mt-2 flex flex-col gap-1">
+                  {uploadMessage && <p className="text-xs font-medium text-cyan-700">{uploadMessage}</p>}
+                  {error && <p className="text-xs font-medium text-rose-600">{error}</p>}
+                  {isParsingResume && (
+                    <div className="flex items-center gap-2 py-1">
+                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+                      <p className="text-xs font-semibold text-cyan-700">正在深度提取结构化经历...</p>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            {/* 基础信息 */}
+            <article className="grid gap-5 rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-6 md:grid-cols-2">
+              <div className="md:col-span-2 flex items-center gap-2 border-b border-slate-200/50 pb-2">
+                <span className="h-4 w-1 rounded-full bg-slate-950" />
+                <h3 className="text-sm font-bold text-slate-950 uppercase tracking-widest">基础信息</h3>
+              </div>
+              {basicFields.map((field) => (
+                <FormField key={field.key} hint={field.hint} label={field.label}>
+                  <TextInput
+                    onChange={(event) => updateBasic(field.key, event.target.value)}
+                    placeholder={`请输入${field.label}`}
+                    value={draft.basicInfo[field.key]}
+                  />
+                </FormField>
+              ))}
             </article>
-          ))}
-        </section>
 
-        <section className="grid gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-950">项目经历</h2>
-            <button
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-              onClick={() => {
-                updateDraft((current) => ({
-                  ...current,
-                  projects: [
-                    ...current.projects,
-                    {
-                      id: `project-${Date.now()}`,
-                      projectName: "",
-                      roleName: "",
-                      projectPeriod: "",
-                      backgroundText: "",
-                      contributionText: "",
-                      outcomeText: "",
-                    },
-                  ],
-                }));
-              }}
-              type="button"
-            >
-              添加项目
-            </button>
-          </div>
+            {/* 编辑表单逻辑保持不变，但增加视觉分隔 */}
+            <div className="space-y-12">
+              <section className="grid gap-6">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="h-4 w-1 rounded-full bg-orange-500" />
+                    <h2 className="text-lg font-bold text-slate-950 px-2">工作 / 实习经历</h2>
+                  </div>
+                  <button
+                    className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 active:scale-95"
+                    onClick={() => {
+                      updateDraft((current) => ({
+                        ...current,
+                        experiences: [
+                          ...current.experiences,
+                          {
+                            id: `experience-${Date.now()}`,
+                            companyName: "",
+                            roleName: "",
+                            startDate: "",
+                            endDate: "",
+                            responsibilityText: "",
+                            achievementText: "",
+                          },
+                        ],
+                      }));
+                    }}
+                    type="button"
+                  >
+                    + 添加经历
+                  </button>
+                </div>
+
+                {draft.experiences.map((item, index) => (
+                  <article key={item.id} className="relative grid gap-5 rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <span className="absolute -left-2 top-6 flex h-6 w-8 items-center justify-center rounded-r-full bg-orange-100 text-[10px] font-bold text-orange-700">
+                      0{index + 1}
+                    </span>
+                    <div className="grid gap-5 md:grid-cols-2">
+                      <FormField label="公司名">
+                        <TextInput onChange={(event) => updateExperience(item.id, "companyName", event.target.value)} value={item.companyName} />
+                      </FormField>
+                      <FormField label="岗位名称">
+                        <TextInput onChange={(event) => updateExperience(item.id, "roleName", event.target.value)} value={item.roleName} />
+                      </FormField>
+                      <FormField label="开始时间">
+                        <TextInput onChange={(event) => updateExperience(item.id, "startDate", event.target.value)} value={item.startDate} />
+                      </FormField>
+                      <FormField label="结束时间">
+                        <TextInput onChange={(event) => updateExperience(item.id, "endDate", event.target.value)} value={item.endDate} />
+                      </FormField>
+                      <div className="md:col-span-2">
+                        <FormField label="职责描述" hint="负责了什么、推进了什么、协作了哪些对象。">
+                          <TextArea onChange={(event) => updateExperience(item.id, "responsibilityText", event.target.value)} value={item.responsibilityText} />
+                        </FormField>
+                      </div>
+                      <div className="md:col-span-2">
+                        <FormField label="成果描述" hint="写出结果数字、效率提升、业务影响。">
+                          <TextArea onChange={(event) => updateExperience(item.id, "achievementText", event.target.value)} value={item.achievementText} />
+                        </FormField>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </section>
+
+              <section className="grid gap-6">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="h-4 w-1 rounded-full bg-blue-500" />
+                    <h2 className="text-lg font-bold text-slate-950 px-2">项目经历</h2>
+                  </div>
+                  <button
+                    className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 active:scale-95"
+                    onClick={() => {
+                      updateDraft((current) => ({
+                        ...current,
+                        projects: [
+                          ...current.projects,
+                          {
+                            id: `project-${Date.now()}`,
+                            projectName: "",
+                            roleName: "",
+                            projectPeriod: "",
+                            backgroundText: "",
+                            contributionText: "",
+                            outcomeText: "",
+                          },
+                        ],
+                      }));
+                    }}
+                    type="button"
+                  >
+                    + 添加项目
+                  </button>
+                </div>
 
           {draft.projects.map((item, index) => (
             <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-2">
@@ -350,23 +404,48 @@ function IntakePageContent() {
           ))}
         </section>
 
-        <div className="rounded-[1.5rem] border border-dashed border-orange-300 bg-orange-50 p-5 text-sm leading-7 text-orange-900">
-          导入解析只会帮你做第一轮结构化填充，不会虚构任何经历。导入后请务必人工检查字段是否正确。
-        </div>
-
-        <div className="flex flex-wrap gap-4">
-          <button
-            className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white"
-            onClick={() => router.push(withTaskId("/tasks/demo/jd", taskId))}
-            type="button"
-          >
-            下一步：JD拆解
-          </button>
-          <Link className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700" href="/tasks/new">
-            返回上一步
-          </Link>
-        </div>
+        <footer className="mt-12 flex justify-between border-t border-slate-100 pt-8">
+            <Link className="rounded-full px-6 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 active:scale-95" href="/tasks/new">
+              ← 返回重选 JD
+            </Link>
+            <button
+              className="rounded-full bg-slate-950 px-10 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 active:scale-95"
+              onClick={() => router.push(withTaskId("/tasks/demo/analysis", taskId))}
+              type="button"
+            >
+              下一步：匹配分析 →
+            </button>
+        </footer>
       </section>
+
+      {/* 右侧：简历原文对照区（Sticky） */}
+      {showRaw && rawText && (
+        <aside className="sticky top-24 h-[calc(100vh-8rem)] w-[450px] shrink-0 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-slate-200/50 flex flex-col">
+          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-900 text-[10px] font-bold text-white">TXT</span>
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-900">简历原文对照</h4>
+            </div>
+            <button 
+              onClick={() => setShowRaw(false)}
+              className="rounded-full p-1 hover:bg-slate-200 transition-colors"
+            >
+              <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto bg-slate-50/30 p-6 font-mono text-[11px] leading-relaxed text-slate-600 selection:bg-cyan-100 italic">
+            <pre className="whitespace-pre-wrap">{rawText}</pre>
+          </div>
+          <div className="border-t border-slate-100 bg-white p-4">
+            <p className="text-center text-[10px] font-medium text-slate-400">
+              💡 遇到解析不准的地方？直接在左侧表单修改即可自动保存。
+            </p>
+          </div>
+        </aside>
+      )}
+      </div>
     </main>
   );
 }
