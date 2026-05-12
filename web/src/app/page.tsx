@@ -4,10 +4,10 @@ import { mvpRoutes } from "@/lib/mvp-data";
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-white selection:bg-cyan-100">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-cyan-50/50 blur-[120px] rounded-full" />
-        <div className="absolute top-[5%] right-[-5%] w-[30%] h-[50%] bg-blue-50/40 blur-[100px] rounded-full" />
+      {/* Background Decor - Increased contrast and visibility */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none">
+        <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[80%] bg-cyan-200/30 blur-[130px] rounded-full" />
+        <div className="absolute top-[10%] right-[-10%] w-[50%] h-[70%] bg-blue-200/20 blur-[110px] rounded-full" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 pt-32 pb-24">
@@ -41,13 +41,15 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <Link 
               href="/tasks/new" 
-              className="group relative inline-flex items-center justify-center rounded-2xl bg-slate-950 px-10 py-5 text-base font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-slate-200 overflow-hidden"
+              className="group relative inline-flex items-center justify-center rounded-2xl bg-slate-900 px-10 py-5 text-base font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(15,23,42,0.2)] overflow-hidden"
             >
-              <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 translate-y-1 group-hover:translate-y-0 transition-transform" />
-              立即开始 AI 优化
-              <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-              </svg>
+              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative flex items-center">
+                立即开始 AI 优化
+                <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                </svg>
+              </span>
             </Link>
             
             <Link 

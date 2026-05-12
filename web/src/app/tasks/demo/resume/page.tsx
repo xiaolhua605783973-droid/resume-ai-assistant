@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 import { FormField, TextArea } from "@/components/form-field";
@@ -11,20 +11,86 @@ import { withTaskId } from "@/lib/mvp-api";
 import { GlobalStepper } from "@/components/global-stepper";
 import type { ResumeSection, TaskDraft } from "@/lib/mvp-types";
 
+const MAX_SUMMARY_LENGTH = 120;
+const MAX_SECTION_BLOCKS: Record<string, number> = {
+  "工作经历": 2,
+  "工作/实习经历": 2,
+  "项目经历": 2,
+  "技能与关键词": 4,
+  "技能": 4,
+};
+
 const normalizePreviewLine = (line: string) =>
   line
     .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/[|｜]\s+/g, " | ")
     .replace(/^[•*-]\s*/, "")
+    .replace(/\s{2,}/g, " ")
     .trim();
 
-const splitContentBlocks = (content: string) =>
+const normalizePreviewContent = (content: string) =>
   content
+    .replace(/\s+-\s+/g, "\n- ")
+    .replace(/\s+(结果：|背景：|贡献：|成果：|角色：|建议强调：|技术专长：|项目成果：|工具开发：)/g, "\n$1")
+    .replace(/\s+(?=\*\*)/g, "\n")
+    .trim();
+
+const clampSummary = (summary: string) => {
+  const normalizedSummary = normalizePreviewLine(summary);
+
+  if (normalizedSummary.length <= MAX_SUMMARY_LENGTH) {
+    return normalizedSummary;
+  }
+
+  return `${normalizedSummary.slice(0, MAX_SUMMARY_LENGTH).trimEnd()}...`;
+};
+
+const splitContentBlocks = (content: string) =>
+  normalizePreviewContent(content)
     .split(/\n{2,}/)
     .map((block) => block.split("\n").map(normalizePreviewLine).filter(Boolean))
     .filter((block) => block.length > 0);
 
+const getPreviewBlocks = (section: ResumeSection) => {
+  const limit = MAX_SECTION_BLOCKS[section.title] ?? 3;
+
+  return splitContentBlocks(section.content)
+    .slice(0, limit)
+    .map((block) => {
+      const [heading, ...details] = block;
+      const limitedDetails = details.slice(0, 4).map((line) => line.replace(/^[•*-]\s*/, ""));
+      return [heading, ...limitedDetails];
+    });
+};
+
+const shouldRenderInPrintableResume = (section: ResumeSection) => !section.title.includes("ATS");
+
+const buildPrintFileName = (draft: TaskDraft) => {
+  const dateToken = new Date().toISOString().slice(0, 10);
+  const hasName = Boolean(draft.basicInfo.name?.trim());
+  return hasName ? `resume-export-${dateToken}` : "resume-export";
+};
+
+const handlePrintResume = (draft: TaskDraft) => {
+  const originalTitle = document.title;
+  const printTitle = buildPrintFileName(draft);
+  document.title = printTitle;
+
+  const restoreTitle = () => {
+    document.title = originalTitle;
+    window.removeEventListener("afterprint", restoreTitle);
+  };
+
+  window.addEventListener("afterprint", restoreTitle);
+  window.print();
+
+  window.setTimeout(() => {
+    restoreTitle();
+  }, 1500);
+};
+
 function ResumePreviewSection({ section }: { section: ResumeSection }) {
-  const blocks = splitContentBlocks(section.content);
+  const blocks = getPreviewBlocks(section);
 
   return (
     <section className="break-inside-avoid">
@@ -66,7 +132,6 @@ function ResumePreviewSection({ section }: { section: ResumeSection }) {
 }
 
 function ResumePreviewPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const taskId = searchParams.get("taskId");
   const { draft, loaded, error, isSaving, updateDraft } = useTaskDraft(taskId);
@@ -121,6 +186,7 @@ function ResumePreviewPageContent() {
   }
 
   const { resumeDraft } = draft;
+  const printableSections = resumeDraft.sections.filter(shouldRenderInPrintableResume);
 
   const contactItems = [
     draft.basicInfo.phone,
@@ -209,7 +275,7 @@ function ResumePreviewPageContent() {
 
                   <button 
                     className="w-full rounded-2xl bg-slate-950 py-4 text-sm font-bold text-white shadow-xl shadow-slate-200 hover:bg-slate-800 active:scale-95 transition-all text-center"
-                    onClick={() => window.print()}
+                    onClick={() => handlePrintResume(draft)}
                   >
                     下载 PDF (Ctrl + P)
                   </button>
@@ -243,7 +309,7 @@ function ResumePreviewPageContent() {
 
           {/* Right Side: Resume Canvas */}
           <div className="flex-1 w-full flex justify-center py-4">
-             <article className="resume-paper w-full max-w-[800px] bg-white shadow-[0_45px_100px_rgba(15,23,42,0.1)] rounded-sm border border-slate-100 min-h-[1131px] p-[1.5cm] lg:p-[2cm] print:p-0 print:m-0 print:shadow-none print:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
+             <article className="resume-paper w-full max-w-[800px] bg-white shadow-[0_45px_100px_rgba(15,23,42,0.1)] rounded-sm border border-slate-100 min-h-[1131px] p-[1.5cm] lg:p-[2cm] print:p-0 print:m-0 print:shadow-none print:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 [font-family:var(--font-noto-sans-sc),PingFang_SC,Hiragino_Sans_GB,Microsoft_YaHei,sans-serif]">
                 <header className="border-b-2 border-slate-900 pb-8 mb-10">
                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
@@ -264,13 +330,13 @@ function ResumePreviewPageContent() {
                     ) : null}
                   </div>
 
-                  <p className="mt-8 text-sm leading-relaxed text-slate-600 font-medium italic border-l-4 border-slate-100 pl-6">
-                    {resumeDraft.summary}
+                  <p className="mt-8 text-[13px] leading-6 text-slate-600 font-medium italic border-l-4 border-slate-100 pl-5">
+                    {clampSummary(resumeDraft.summary)}
                   </p>
                 </header>
 
-                <div className="grid gap-10">
-                  {resumeDraft.sections.map((section) => (
+                <div className="grid gap-8">
+                  {printableSections.map((section) => (
                     <ResumePreviewSection key={section.title} section={section} />
                   ))}
                 </div>
