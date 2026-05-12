@@ -11,13 +11,21 @@ import { withTaskId } from "@/lib/mvp-api";
 import { GlobalStepper } from "@/components/global-stepper";
 import type { ResumeSection, TaskDraft } from "@/lib/mvp-types";
 
-const MAX_SUMMARY_LENGTH = 120;
+const MAX_SUMMARY_LENGTH = 220;
 const MAX_SECTION_BLOCKS: Record<string, number> = {
-  "工作经历": 2,
-  "工作/实习经历": 2,
-  "项目经历": 2,
-  "技能与关键词": 4,
-  "技能": 4,
+  "工作经历": 3,
+  "工作/实习经历": 3,
+  "项目经历": 3,
+  "技能与关键词": 5,
+  "技能": 5,
+};
+
+const MAX_SECTION_DETAIL_LINES: Record<string, number> = {
+  "工作经历": 5,
+  "工作/实习经历": 5,
+  "项目经历": 5,
+  "技能与关键词": 5,
+  "技能": 5,
 };
 
 const normalizePreviewLine = (line: string) =>
@@ -53,12 +61,13 @@ const splitContentBlocks = (content: string) =>
 
 const getPreviewBlocks = (section: ResumeSection) => {
   const limit = MAX_SECTION_BLOCKS[section.title] ?? 3;
+  const detailLimit = MAX_SECTION_DETAIL_LINES[section.title] ?? 5;
 
   return splitContentBlocks(section.content)
     .slice(0, limit)
     .map((block) => {
       const [heading, ...details] = block;
-      const limitedDetails = details.slice(0, 4).map((line) => line.replace(/^[•*-]\s*/, ""));
+      const limitedDetails = details.slice(0, detailLimit).map((line) => line.replace(/^[•*-]\s*/, ""));
       return [heading, ...limitedDetails];
     });
 };
@@ -99,7 +108,7 @@ function ResumePreviewSection({ section }: { section: ResumeSection }) {
         <div className="h-px flex-1 bg-slate-100" />
       </div>
 
-      <div className="mt-4 grid gap-5 text-[14px] leading-relaxed text-slate-700">
+      <div className="mt-3 grid gap-4 text-[13px] leading-[1.55] text-slate-700">
         {blocks.length ? (
           blocks.map((block, index) => {
             const [heading, ...details] = block;
@@ -107,10 +116,10 @@ function ResumePreviewSection({ section }: { section: ResumeSection }) {
 
             return (
               <div key={`${section.title}-${index}`} className="break-inside-avoid">
-                {hasDetailLines ? <p className="font-bold text-slate-900 border-l-2 border-cyan-500 pl-3 mb-2">{heading}</p> : null}
+                {hasDetailLines ? <p className="mb-1.5 border-l-2 border-cyan-500 pl-3 font-bold text-slate-900">{heading}</p> : null}
 
                 {hasDetailLines ? (
-                  <ul className="grid gap-1.5 pl-4 text-slate-600">
+                  <ul className="grid gap-1 pl-4 text-slate-600">
                     {details.map((line) => (
                       <li key={line} className="list-disc marker:text-cyan-500/50">
                         {line}
@@ -309,20 +318,20 @@ function ResumePreviewPageContent() {
 
           {/* Right Side: Resume Canvas */}
           <div className="flex-1 w-full flex justify-center py-4">
-             <article className="resume-paper w-full max-w-[800px] bg-white shadow-[0_45px_100px_rgba(15,23,42,0.1)] rounded-sm border border-slate-100 min-h-[1131px] p-[1.5cm] lg:p-[2cm] print:p-0 print:m-0 print:shadow-none print:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 [font-family:var(--font-noto-sans-sc),PingFang_SC,Hiragino_Sans_GB,Microsoft_YaHei,sans-serif]">
-                <header className="border-b-2 border-slate-900 pb-8 mb-10">
+             <article className="resume-paper w-full max-w-[800px] bg-white shadow-[0_45px_100px_rgba(15,23,42,0.1)] rounded-sm border border-slate-100 min-h-[1131px] p-[1.35cm] lg:p-[1.7cm] print:p-0 print:m-0 print:shadow-none print:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 [font-family:var(--font-noto-sans-sc),PingFang_SC,Hiragino_Sans_GB,Microsoft_YaHei,sans-serif]">
+               <header className="mb-8 border-b-2 border-slate-900 pb-6">
                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                      <h1 className="text-4xl font-bold tracking-tight text-slate-950">
+                      <h1 className="text-[2rem] font-bold tracking-tight text-slate-950">
                         {draft.basicInfo.name || "姓名"}
                       </h1>
-                      <p className="mt-3 text-sm font-bold uppercase tracking-[0.3em] text-cyan-600">
+                      <p className="mt-2 text-[12px] font-bold uppercase tracking-[0.28em] text-cyan-600">
                         {resumeDraft.headline || "定向岗位目标"}
                       </p>
                     </div>
 
                     {contactItems.length ? (
-                      <ul className="grid gap-1 md:text-right text-xs font-medium text-slate-500">
+                      <ul className="grid gap-1 text-[11px] font-medium text-slate-500 md:text-right">
                         {contactItems.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
@@ -330,12 +339,12 @@ function ResumePreviewPageContent() {
                     ) : null}
                   </div>
 
-                  <p className="mt-8 text-[13px] leading-6 text-slate-600 font-medium italic border-l-4 border-slate-100 pl-5">
+                  <p className="mt-6 border-l-4 border-slate-100 pl-5 text-[12.5px] font-medium italic leading-[1.55] text-slate-600">
                     {clampSummary(resumeDraft.summary)}
                   </p>
                 </header>
 
-                <div className="grid gap-8">
+                <div className="grid gap-6">
                   {printableSections.map((section) => (
                     <ResumePreviewSection key={section.title} section={section} />
                   ))}
