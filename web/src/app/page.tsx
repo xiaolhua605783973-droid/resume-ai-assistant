@@ -12,7 +12,7 @@ export default function Home() {
 
       <div className="relative mx-auto max-w-7xl px-6 pt-32 pb-24">
         {/* Navbar-ish Logo */}
-        <nav className="absolute top-10 left-6 flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-700">
+        <nav className="absolute top-10 left-6 flex items-center gap-2 opacity-0 animate-reveal-fade">
            <div className="h-8 w-8 rounded-lg bg-slate-950 flex items-center justify-center shadow-lg shadow-slate-200">
               <span className="text-white font-bold text-xs">AI</span>
            </div>
@@ -22,7 +22,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
           <div className="flex-1 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 opacity-0 animate-reveal-up">
                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
@@ -30,19 +30,19 @@ export default function Home() {
                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 opacity-0 animate-reveal-up delay-150">
               让每一份简历，<br />
               都为 <span className="relative inline-block text-cyan-600">
                 目标岗位
-                <span className="absolute bottom-1 left-0 h-[6px] w-full bg-cyan-100/60 -z-10 animate-in zoom-in-x duration-1000 delay-1000 fill-mode-both" />
+                <span className="absolute bottom-2 left-0 h-[8px] bg-cyan-100 -z-10 opacity-0 animate-draw-line delay-1000" />
               </span> 而生。
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 opacity-0 animate-reveal-up delay-300">
               不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
+            <div className="flex flex-col sm:flex-row items-center gap-6 opacity-0 animate-reveal-up delay-500">
               <Link 
                 href="/tasks/new" 
                 className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
@@ -65,9 +65,9 @@ export default function Home() {
           </div>
 
           <div className="flex-1 w-full max-w-2xl">
-            <div className="relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-700">
+            <div className="relative group opacity-0 animate-reveal-right delay-700">
               {/* Floating Badge on Video */}
-              <div className="absolute -top-4 -right-4 z-20 rounded-2xl bg-white p-4 shadow-2xl border border-slate-100 animate-bounce duration-[3000ms]">
+              <div className="absolute -top-4 -right-4 z-20 rounded-2xl bg-white p-4 shadow-2xl border border-slate-100 animate-bounce cursor-default">
                  <div className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-md mb-1 uppercase tracking-tighter">AI Analysis</div>
                  <div className="text-slate-900 font-bold text-sm">Match Score: 96%</div>
               </div>
@@ -108,7 +108,7 @@ export default function Home() {
         </section>
 
         {/* Feature Grid */}
-        <section className="mt-40 grid gap-8 md:grid-cols-3 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+        <section className="mt-40 grid gap-8 md:grid-cols-3 opacity-0 animate-reveal-up delay-[1000ms]">
           {[
             {
               title: "JD 结构化拆解",

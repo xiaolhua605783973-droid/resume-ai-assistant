@@ -12,6 +12,31 @@
   --font-cjk-sans: var(--font-noto-sans-sc);
   --font-mono: var(--font-geist-mono);
   --font-serif: Georgia, "Times New Roman", serif;
+  
+  --animate-reveal-up: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-reveal-right: reveal-right 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-reveal-fade: reveal-fade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-draw-line: draw-line 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes reveal-up {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-right {
+  0% { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reveal-fade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes draw-line {
+  0% { width: 0; opacity: 0; }
+  100% { width: 100%; opacity: 1; }
 }
 
 * {
