@@ -41,9 +41,8 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <Link 
               href="/tasks/new" 
-              className="group relative inline-flex items-center justify-center rounded-2xl bg-slate-900 px-10 py-5 text-base font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(15,23,42,0.2)] overflow-hidden"
+              className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center">
                 立即开始 AI 优化
                 <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +53,7 @@ export default function Home() {
             
             <Link 
               href="/tasks/demo/intake" 
-              className="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest"
+              className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
             >
               查看演示案例
             </Link>
