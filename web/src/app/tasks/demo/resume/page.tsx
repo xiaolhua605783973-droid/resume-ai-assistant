@@ -364,7 +364,7 @@ function ResumePreviewPageContent() {
             top: 0 !important; 
             width: 210mm !important; 
             min-height: 297mm !important; 
-            padding: 2cm !important;
+            padding: 1.7cm !important;
             box-shadow: none !important;
             border: none !important;
           }
