@@ -330,92 +330,94 @@ function IntakePageContent() {
                   </button>
                 </div>
 
-          {draft.projects.map((item, index) => (
-            <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-2">
-              <p className="md:col-span-2 text-sm font-semibold text-orange-700">项目 0{index + 1}</p>
-              <FormField label="项目名称">
-                <TextInput onChange={(event) => updateProject(item.id, "projectName", event.target.value)} value={item.projectName} />
-              </FormField>
-              <FormField label="你的角色">
-                <TextInput onChange={(event) => updateProject(item.id, "roleName", event.target.value)} value={item.roleName} />
-              </FormField>
-              <div className="md:col-span-2">
-                <FormField label="项目周期">
-                  <TextInput onChange={(event) => updateProject(item.id, "projectPeriod", event.target.value)} value={item.projectPeriod} />
-                </FormField>
-              </div>
-              <div className="md:col-span-2">
-                <FormField label="项目背景">
-                  <TextArea onChange={(event) => updateProject(item.id, "backgroundText", event.target.value)} value={item.backgroundText} />
-                </FormField>
-              </div>
-              <div className="md:col-span-2">
-                <FormField label="个人贡献">
-                  <TextArea onChange={(event) => updateProject(item.id, "contributionText", event.target.value)} value={item.contributionText} />
-                </FormField>
-              </div>
-              <div className="md:col-span-2">
-                <FormField label="结果产出">
-                  <TextArea onChange={(event) => updateProject(item.id, "outcomeText", event.target.value)} value={item.outcomeText} />
-                </FormField>
-              </div>
-            </article>
-          ))}
-        </section>
+                {draft.projects.map((item, index) => (
+                  <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-2">
+                    <p className="md:col-span-2 text-sm font-semibold text-orange-700">项目 0{index + 1}</p>
+                    <FormField label="项目名称">
+                      <TextInput onChange={(event) => updateProject(item.id, "projectName", event.target.value)} value={item.projectName} />
+                    </FormField>
+                    <FormField label="你的角色">
+                      <TextInput onChange={(event) => updateProject(item.id, "roleName", event.target.value)} value={item.roleName} />
+                    </FormField>
+                    <div className="md:col-span-2">
+                      <FormField label="项目周期">
+                        <TextInput onChange={(event) => updateProject(item.id, "projectPeriod", event.target.value)} value={item.projectPeriod} />
+                      </FormField>
+                    </div>
+                    <div className="md:col-span-2">
+                      <FormField label="项目背景">
+                        <TextArea onChange={(event) => updateProject(item.id, "backgroundText", event.target.value)} value={item.backgroundText} />
+                      </FormField>
+                    </div>
+                    <div className="md:col-span-2">
+                      <FormField label="个人贡献">
+                        <TextArea onChange={(event) => updateProject(item.id, "contributionText", event.target.value)} value={item.contributionText} />
+                      </FormField>
+                    </div>
+                    <div className="md:col-span-2">
+                      <FormField label="结果产出">
+                        <TextArea onChange={(event) => updateProject(item.id, "outcomeText", event.target.value)} value={item.outcomeText} />
+                      </FormField>
+                    </div>
+                  </article>
+                ))}
+              </section>
 
-        <section className="grid gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-950">技能与证书</h2>
-            <button
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-              onClick={() => {
-                updateDraft((current) => ({
-                  ...current,
-                  skills: [
-                    ...current.skills,
-                    {
-                      id: `skill-${Date.now()}`,
-                      skillName: "",
-                      skillType: "",
-                      skillLevel: "",
-                    },
-                  ],
-                }));
-              }}
-              type="button"
-            >
-              添加技能
-            </button>
+              <section className="grid gap-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-slate-950">技能与证书</h2>
+                  <button
+                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+                    onClick={() => {
+                      updateDraft((current) => ({
+                        ...current,
+                        skills: [
+                          ...current.skills,
+                          {
+                            id: `skill-${Date.now()}`,
+                            skillName: "",
+                            skillType: "",
+                            skillLevel: "",
+                          },
+                        ],
+                      }));
+                    }}
+                    type="button"
+                  >
+                    添加技能
+                  </button>
+                </div>
+
+                {draft.skills.map((item, index) => (
+                  <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-3">
+                    <p className="md:col-span-3 text-sm font-semibold text-orange-700">技能 0{index + 1}</p>
+                    <FormField label="技能名称">
+                      <TextInput onChange={(event) => updateSkill(item.id, "skillName", event.target.value)} value={item.skillName} />
+                    </FormField>
+                    <FormField label="技能类型">
+                      <TextInput onChange={(event) => updateSkill(item.id, "skillType", event.target.value)} value={item.skillType} />
+                    </FormField>
+                    <FormField label="熟练度">
+                      <TextInput onChange={(event) => updateSkill(item.id, "skillLevel", event.target.value)} value={item.skillLevel} />
+                    </FormField>
+                  </article>
+                ))}
+              </section>
+            </div>
+
+            <footer className="mt-12 flex justify-between border-t border-slate-100 pt-8">
+              <Link className="rounded-full px-6 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 active:scale-95" href="/tasks/new">
+                ← 返回重选 JD
+              </Link>
+              <button
+                className="rounded-full bg-slate-950 px-10 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 active:scale-95"
+                onClick={() => router.push(withTaskId("/tasks/demo/analysis", taskId))}
+                type="button"
+              >
+                下一步：匹配分析 →
+              </button>
+            </footer>
           </div>
-
-          {draft.skills.map((item, index) => (
-            <article key={item.id} className="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-5 md:grid-cols-3">
-              <p className="md:col-span-3 text-sm font-semibold text-orange-700">技能 0{index + 1}</p>
-              <FormField label="技能名称">
-                <TextInput onChange={(event) => updateSkill(item.id, "skillName", event.target.value)} value={item.skillName} />
-              </FormField>
-              <FormField label="技能类型">
-                <TextInput onChange={(event) => updateSkill(item.id, "skillType", event.target.value)} value={item.skillType} />
-              </FormField>
-              <FormField label="熟练度">
-                <TextInput onChange={(event) => updateSkill(item.id, "skillLevel", event.target.value)} value={item.skillLevel} />
-              </FormField>
-            </article>
-          ))}
-        </section>
-
-        <footer className="mt-12 flex justify-between border-t border-slate-100 pt-8">
-            <Link className="rounded-full px-6 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 active:scale-95" href="/tasks/new">
-              ← 返回重选 JD
-            </Link>
-            <button
-              className="rounded-full bg-slate-950 px-10 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 active:scale-95"
-              onClick={() => router.push(withTaskId("/tasks/demo/analysis", taskId))}
-              type="button"
-            >
-              下一步：匹配分析 →
-            </button>
-        </footer>
       </section>
 
       {/* 右侧：简历原文对照区（Sticky） */}

@@ -10,10 +10,16 @@ import { useTaskDraft } from "@/hooks/use-task-draft";
 import { withTaskId } from "@/lib/mvp-api";
 import type { ResumeSection, TaskDraft } from "@/lib/mvp-types";
 
+const normalizePreviewLine = (line: string) =>
+  line
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/^[•*-]\s*/, "")
+    .trim();
+
 const splitContentBlocks = (content: string) =>
   content
     .split(/\n{2,}/)
-    .map((block) => block.split("\n").map((line) => line.trim()).filter(Boolean))
+    .map((block) => block.split("\n").map(normalizePreviewLine).filter(Boolean))
     .filter((block) => block.length > 0);
 
 function ResumePreview({ draft }: { draft: TaskDraft }) {
@@ -230,39 +236,39 @@ function ResumePageContent() {
           </div>
         </article>
 
-        <aside className="resume-actions-panel rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white shadow-[0_18px_60px_rgba(15,23,42,0.2)] xl:sticky xl:top-8 xl:self-start">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">导出与提示</p>
-          <ul className="mt-5 grid gap-3 text-sm leading-7 text-slate-200">
-            {analysis.atsTips.map((tip) => (
-              <li key={tip}>{tip}</li>
-            ))}
-          </ul>
+        <div className="grid gap-6 xl:sticky xl:top-8 xl:self-start">
+          <aside className="resume-actions-panel rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white shadow-[0_18px_60px_rgba(15,23,42,0.2)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">导出与提示</p>
+            <ul className="mt-5 grid gap-3 text-sm leading-7 text-slate-200">
+              {analysis.atsTips.map((tip) => (
+                <li key={tip}>{tip}</li>
+              ))}
+            </ul>
 
-          {error ? <p className="mt-5 text-sm leading-7 text-rose-200">{error}</p> : null}
-          <p aria-live="polite" className="mt-5 min-h-7 text-sm leading-7 text-slate-300">
-            {isSaving ? "简历修改正在同步到后端..." : null}
-          </p>
+            {error ? <p className="mt-5 text-sm leading-7 text-rose-200">{error}</p> : null}
+            <p aria-live="polite" className="mt-5 min-h-7 text-sm leading-7 text-slate-300">
+              {isSaving ? "简历修改正在同步到后端..." : null}
+            </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <button
-              className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950"
-              onClick={() => window.print()}
-              type="button"
-            >
-              导出 PDF
-            </button>
-            <Link className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950" href="/">
-              返回首页
-            </Link>
-            <Link className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white" href={withTaskId("/tasks/demo/analysis", taskId)}>
-              返回分析页
-            </Link>
-          </div>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <button
+                className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950"
+                onClick={() => window.print()}
+                type="button"
+              >
+                导出 PDF
+              </button>
+              <Link className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950" href="/">
+                返回首页
+              </Link>
+              <Link className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white" href={withTaskId("/tasks/demo/analysis", taskId)}>
+                返回分析页
+              </Link>
+            </div>
+          </aside>
 
-          <div className="mt-8 border-t border-white/10 pt-8">
-            <ResumePreview draft={draft} />
-          </div>
-        </aside>
+          <ResumePreview draft={draft} />
+        </div>
       </section>
     </main>
   );

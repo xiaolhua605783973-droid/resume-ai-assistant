@@ -71,6 +71,8 @@
 - `web`: local Playwright reproduction on `/tasks/demo/intake` confirmed textarea flow `回车 -> 中文输入提交 -> Delete` now deletes the character at the caret and keeps the caret in place.
 - `web`: `npm run lint` passed after aligning the root `<html>` language and smooth-scroll attributes.
 - `web`: browser/runtime check on `/tasks/demo/intake` confirmed `document.documentElement.lang === "zh-CN"`, `data-scroll-behavior === "smooth"`, and the previous hydration/scroll warnings no longer appeared in the dev log after reload.
+- `web`: `npm run lint` passed after rebuilding `/tasks/demo/resume` around a dedicated A4 preview canvas and print-only export styles.
+- `web`: browser check on `/tasks/demo/resume?taskId=67fe2af1-ef8b-45ac-a063-5a557550639c` confirmed the export page now renders one `.resume-paper` preview canvas, keeps the `导出 PDF` button, and presents cleaned section text without raw markdown markers.
 
 ## Bug Log
 
@@ -91,6 +93,8 @@
 | 2026-05-11 | Controlled input caret | Deleting text from the middle of an input or textarea could move the caret to the end of the field | `use-task-draft.ts` wrapped controlled draft updates in `startTransition`, but React text inputs require synchronous state updates to preserve selection reliably | Removed `startTransition` from `updateDraft` so draft edits commit synchronously while autosave remains debounced in the background | Do not put controlled text input state behind transition-priority updates; keep text edits synchronous and push only secondary work into transitions |
 | 2026-05-11 | IME textarea delete | In textarea fields, pressing `Delete` right after entering Chinese text at the start of a new paragraph could jump the caret to the end and delete the wrong character | The shared IME fix used an unconditional `skipNextChangeRef`, so when a browser or IME did not emit a trailing duplicate `change` after `compositionend`, the next real delete event was swallowed | Replaced unconditional skip-next-change logic with value-based post-composition deduplication so only duplicate trailing events are ignored | Post-composition guards must be value-aware; never consume the next user edit unless it exactly matches the just-committed composition payload |
 | 2026-05-11 | Root layout runtime warnings | The app emitted Next.js smooth-scroll warnings and hydration mismatch warnings around the root `<html>` attributes | The root layout still declared `lang="en"` even though the UI is Chinese, and smooth scrolling was enabled globally without the `data-scroll-behavior` attribute required by Next.js | Updated the root layout to use `lang="zh-CN"` and `data-scroll-behavior="smooth"` on `<html>` | Keep root layout metadata and runtime attributes aligned with the actual UI locale and global scrolling behavior |
+| 2026-05-12 | Resume PDF demo quality | Browser PDF export looked like a raw product screen instead of a presentation-ready resume | The export flow printed the editing page directly, with no dedicated A4 document canvas or print-only layout | Reworked `/tasks/demo/resume` into editor + A4 preview and added print styles that hide editing chrome while printing only the resume paper | For browser-PDF MVPs, separate document presentation from editing controls and treat print CSS as part of the export feature |
+| 2026-05-12 | Intake page compilation | The app stopped compiling because `/tasks/demo/intake` had broken JSX nesting near the footer and raw-text aside | A local layout refactor left container tags misaligned, so Turbopack failed to parse the page and blocked validation of unrelated features | Restored the missing container boundaries without changing the form behavior | When reshaping large JSX trees, validate the page immediately so structural mismatches do not block later work |
 | 2026-05-10 | Next.js prerender | Production build failed because `useSearchParams()` was used without a suspense boundary on task pages | App Router static prerendering requires client components that read search params to be wrapped in `Suspense` | Wrapped the intake, JD, analysis, and resume pages in `Suspense` and moved the search-param logic into inner content components | Any App Router page using `useSearchParams` should be checked against production build requirements, not just lint |
 
 ## Change Log
@@ -126,6 +130,13 @@
 - Removed `startTransition` from controlled draft updates so intake/resume fields keep stable caret position during mid-text edits.
 - Replaced unconditional post-`compositionend` change skipping with value-based deduplication so textarea `Delete` works correctly after Chinese IME input.
 - Aligned root `<html>` attributes with the Chinese UI and Next.js smooth-scroll requirements to remove runtime warnings during local development.
+
+### 2026-05-12
+
+- Reworked the final resume step into an editor-plus-preview experience, with a dedicated A4 resume canvas for browser PDF export.
+- Added print-only CSS so the exported PDF hides editing controls and keeps the printable resume layout clean.
+- Cleaned preview text formatting so markdown markers and list prefixes do not leak into the exported demo resume.
+- Repaired a broken JSX container boundary in the intake page so the app compiles again during validation.
 
 ## Handoff Notes
 
