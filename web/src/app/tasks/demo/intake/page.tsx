@@ -411,10 +411,10 @@ function IntakePageContent() {
               </Link>
               <button
                 className="rounded-full bg-slate-950 px-10 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 active:scale-95"
-                onClick={() => router.push(withTaskId("/tasks/demo/analysis", taskId))}
+                onClick={() => router.push(withTaskId("/tasks/demo/jd", taskId))}
                 type="button"
               >
-                下一步：匹配分析 →
+                下一步：JD 核心拆解 →
               </button>
             </footer>
           </div>
