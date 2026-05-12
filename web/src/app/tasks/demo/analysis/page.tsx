@@ -191,18 +191,27 @@ function AnalysisPageContent() {
             >
               ← 返回修正 JD
             </Link>
-            <button
-              className="rounded-full bg-white px-12 py-4 text-sm font-bold text-slate-950 shadow-2xl shadow-cyan-500/20 transition hover:scale-105 active:scale-95"
-              onClick={async () => {
-                const nextTask = await requestAnalysis();
-                if (nextTask?.draft.resumeDraft) {
-                  router.push(withTaskId("/tasks/demo/resume", taskId));
-                }
-              }}
-              type="button"
-            >
-              {isAnalyzing ? "正在准备简历方案..." : "下一步：生成个性化简历初稿 →"}
-            </button>
+            {draft.resumeDraft ? (
+              <Link
+                className="rounded-full bg-cyan-500 px-12 py-4 text-sm font-bold text-white shadow-2xl shadow-cyan-500/40 transition hover:scale-105 active:scale-95 animate-pulse"
+                href={withTaskId("/tasks/demo/resume", taskId)}
+              >
+                简历方案也已就绪：查看最终成品 →
+              </Link>
+            ) : (
+              <button
+                className="rounded-full bg-white px-12 py-4 text-sm font-bold text-slate-950 shadow-2xl shadow-cyan-500/20 transition hover:scale-105 active:scale-95"
+                onClick={async () => {
+                  const nextTask = await requestAnalysis();
+                  if (nextTask?.draft.resumeDraft) {
+                    router.push(withTaskId("/tasks/demo/resume", taskId));
+                  }
+                }}
+                type="button"
+              >
+                {isAnalyzing ? "正在准备简历方案..." : "下一步：生成个性化简历初稿 →"}
+              </button>
+            )}
           </footer>
         </section>
       </div>
