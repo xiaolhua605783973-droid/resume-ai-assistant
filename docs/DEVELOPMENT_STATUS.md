@@ -165,3 +165,6 @@
 - If a task changes architectural direction, record that explicitly in the summary and next-step sections.
 - If a bug is fixed, append a bug log row before ending the task.
 - Current live slice is backend-backed from task creation through resume editing, and the analyze route has been verified against a real DeepSeek OpenAI-compatible endpoint.
+### 2026-05-12 - Privacy Policy & MVP State
+- Resolved contradiction between 'Sync to Server' UI states and 'Burn After Reading' privacy promises by adopting wording based on 'Temporary Session Cache'.
+- [Future Debt] Option 1 (Pure LocalStorage Frontend with Stateless Next.js API) is recommended for production to perfectly enforce the 'Local Only' product promise but was deferred to focus on completing MVP.
