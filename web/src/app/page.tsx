@@ -52,7 +52,7 @@ export default function Home() {
             </Link>
             
             <Link 
-              href="/tasks/demo/intake" 
+              href="/tasks/demo/intake?taskId=demo-task-id" 
               className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
             >
               查看演示案例
