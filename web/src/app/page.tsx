@@ -20,43 +20,76 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <section className="max-w-4xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
-             <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-             </span>
-             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
+        <section className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+          <div className="flex-1 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 border border-slate-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+               <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+               </span>
+               <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">MVP v1.0 Live Now</span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              让每一份简历，<br />
+              都为 <span className="text-cyan-600">目标岗位</span> 而生。
+            </h1>
+
+            <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+              不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+              <Link 
+                href="/tasks/new" 
+                className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
+              >
+                <span className="relative flex items-center">
+                  立即开始 AI 优化
+                  <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                  </svg>
+                </span>
+              </Link>
+              
+              <Link 
+                href="/tasks/demo/intake?taskId=demo-task-id" 
+                className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
+              >
+                查看演示案例
+              </Link>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-950 leading-[1.05] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-            让每一份简历，<br />
-            都为 <span className="text-cyan-600">目标岗位</span> 而生。
-          </h1>
+          <div className="flex-1 w-full max-w-2xl animate-in fade-in slide-in-from-right-12 duration-1000 delay-500">
+            <div className="relative group">
+              {/* Browser Window Mockup */}
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(15,23,42,0.1)] transition-transform duration-500 group-hover:-translate-y-2">
+                <div className="flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
+                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+                  <div className="ml-4 h-4 w-48 rounded-md bg-slate-100" />
+                </div>
+                <div className="aspect-[16/10] bg-slate-50 p-4">
+                  <div className="relative h-full w-full rounded-lg border-2 border-dashed border-slate-200 bg-white/50 flex flex-col items-center justify-center gap-4 group/video cursor-pointer">
+                    <div className="h-16 w-16 rounded-full bg-cyan-600/10 flex items-center justify-center text-cyan-600 transition-transform duration-300 group-hover/video:scale-110 shadow-lg shadow-cyan-50">
+                       <svg className="h-8 w-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5.14v14c0 .86.84 1.4 1.58.97l11-7a1 1 0 000-1.72l-11-7a1 1 0 00-1.58.75z" />
+                       </svg>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-slate-900">观看演示视频</p>
+                      <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">ResuMate AI Workflow • 45s</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mb-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-            不再盲目投递。输入你的经历与目标 JD，AI 助手将为你提供深度匹配诊断、ATS 优化建议，并一键生成高度定制的简历方案。
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <Link 
-              href="/tasks/new" 
-              className="group relative inline-flex items-center justify-center rounded-2xl bg-cyan-600 px-10 py-5 text-base font-bold text-white transition-all hover:bg-cyan-500 hover:scale-[1.02] active:scale-95 shadow-xl shadow-cyan-100 ring-4 ring-cyan-500/10"
-            >
-              <span className="relative flex items-center">
-                立即开始 AI 优化
-                <svg className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-                </svg>
-              </span>
-            </Link>
-            
-            <Link 
-              href="/tasks/demo/intake?taskId=demo-task-id" 
-              className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest px-4 py-2 border-b-2 border-transparent hover:border-slate-100"
-            >
-              查看演示案例
-            </Link>
+              {/* Decorative elements behind the video */}
+              <div className="absolute -bottom-6 -right-6 -z-10 h-64 w-64 rounded-full bg-cyan-100/50 blur-3xl transition-opacity group-hover:opacity-100 opacity-0" />
+              <div className="absolute -top-6 -left-6 -z-10 h-64 w-64 rounded-full bg-blue-100/30 blur-3xl transition-opacity group-hover:opacity-100 opacity-0" />
+            </div>
           </div>
         </section>
 
