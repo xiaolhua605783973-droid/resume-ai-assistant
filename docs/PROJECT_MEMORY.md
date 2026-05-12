@@ -70,6 +70,7 @@
 - The current MVP PDF export path is browser print from `/tasks/demo/resume`; keep the exported document anchored to a dedicated A4 preview canvas with print-only CSS, and hide editor chrome during print rather than printing the raw editing layout.
 - For Chinese resume export, do not rely on the Latin-only Geist stack during print; explicitly apply a Chinese-capable font such as `Noto Sans SC` on the printable canvas and use an ASCII `document.title` during `window.print()` to avoid downloaded PDF filename garbling.
 - For printable resume density, prefer mild typography tightening before aggressive content truncation; it is acceptable for the export to spill past one page as long as the content remains intact and stays within a roughly three-page ceiling.
+- In the resume print CSS, never hide generic `header` selectors; the printable canvas uses its own `header` for the name, headline, and summary, so print-only hiding rules must target page chrome like `nav` and `aside` instead.
 - External analysis returns free-form model text; always normalize and validate provider JSON before persisting it into task records.
 - `pdf-parse` needs an explicit absolute worker URL in the Next.js server runtime; relying on its default `./pdf.worker.mjs` path breaks in `.next` server chunks.
 - For PDF resume extraction, pass `pageJoiner: ""` to avoid synthetic page markers leaking into heuristics, and treat document-title lines like `Dummy PDF file` as noise rather than candidate names.

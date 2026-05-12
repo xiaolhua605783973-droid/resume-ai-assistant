@@ -368,7 +368,7 @@ function ResumePreviewPageContent() {
             box-shadow: none !important;
             border: none !important;
           }
-          .GlobalStepper, aside, header, footer { display: none !important; }
+          .GlobalStepper, nav, aside, footer { display: none !important; }
         }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
