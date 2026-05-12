@@ -66,12 +66,6 @@ export default function Home() {
 
           <div className="flex-1 w-full max-w-2xl">
             <div className="relative group opacity-0 animate-reveal-right delay-700">
-              {/* Floating Badge on Video */}
-              <div className="absolute -top-4 -right-4 z-20 rounded-2xl bg-white p-4 shadow-2xl border border-slate-100 animate-bounce cursor-default">
-                 <div className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-md mb-1 uppercase tracking-tighter">AI Analysis</div>
-                 <div className="text-slate-900 font-bold text-sm">Match Score: 96%</div>
-              </div>
-
               {/* Browser Window Mockup */}
               <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_32px_64px_-16px_rgba(15,23,42,0.1)] transition-all duration-700 group-hover:-translate-y-4 group-hover:rotate-1 group-hover:shadow-cyan-100/50">
                 <div className="flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
