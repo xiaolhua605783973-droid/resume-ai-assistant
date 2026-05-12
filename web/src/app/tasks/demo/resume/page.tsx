@@ -271,14 +271,14 @@ function ResumePreviewPageContent() {
 
                 <div className="mt-8 pt-6 border-t border-slate-100 grid gap-4">
                   <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                    <span>本地缓存状态</span>
+                    <span>会话缓存状态</span>
                     {isSaving ? (
                       <span className="flex items-center gap-1.5 text-cyan-500">
                         <span className="h-1 w-1 animate-ping rounded-full bg-cyan-500" />
                         缓存中...
                       </span>
                     ) : (
-                      <span className="text-emerald-500">已自动缓存 (本地)</span>
+                      <span className="text-emerald-500">已安全缓存</span>
                     )}
                   </div>
 

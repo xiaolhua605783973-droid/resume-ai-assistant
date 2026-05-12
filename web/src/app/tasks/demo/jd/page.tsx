@@ -68,7 +68,7 @@ function JobDescriptionPageContent() {
                 ) : (
                   <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
                     <span className="h-1 w-1 rounded-full bg-emerald-500" />
-                    草稿已自动缓存 (本地)
+                    会话草稿已安全缓存
                   </span>
                 )}
               </div>
