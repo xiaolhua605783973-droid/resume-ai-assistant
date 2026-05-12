@@ -8,6 +8,7 @@ import { FormField, TextArea } from "@/components/form-field";
 import { SectionTitle } from "@/components/section-title";
 import { useTaskDraft } from "@/hooks/use-task-draft";
 import { withTaskId } from "@/lib/mvp-api";
+import { GlobalStepper } from "@/components/global-stepper";
 
 function JobDescriptionPageContent() {
   const router = useRouter();
@@ -18,17 +19,25 @@ function JobDescriptionPageContent() {
 
   if (!taskId) {
     return (
-      <main className="min-h-screen bg-[#fffaf5] px-6 py-10 text-slate-900">
-        <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-orange-100 bg-white p-8">
-          <SectionTitle
-            eyebrow="Step 3"
-            title="缺少任务上下文"
-            description="请先创建任务并录入经历，再进行 JD 分析。"
-          />
-          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/new">
-            返回新建任务
-          </Link>
-        </section>
+      <main className="min-h-screen bg-slate-50 text-slate-900">
+        <GlobalStepper />
+        <div className="mx-auto max-w-4xl px-6 py-20">
+          <section className="grid gap-6 rounded-[2rem] border border-slate-200 bg-white p-12 text-center shadow-sm">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+              <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+              </svg>
+            </div>
+            <SectionTitle
+              eyebrow="Error"
+              title="缺少任务上下文"
+              description="请先创建任务并录入经历，再进行 JD 分析。"
+            />
+            <Link className="mx-auto mt-4 rounded-full bg-slate-950 px-8 py-3 text-sm font-bold text-white transition hover:bg-slate-800" href="/tasks/new">
+              ← 返回新建任务
+            </Link>
+          </section>
+        </div>
       </main>
     );
   }
@@ -38,107 +47,144 @@ function JobDescriptionPageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fffaf5] px-6 py-10 text-slate-900">
-      <section className="mx-auto grid w-full max-w-5xl gap-8 rounded-[2rem] border border-orange-100 bg-white p-8 shadow-[0_18px_60px_rgba(194,65,12,0.1)]">
-        <SectionTitle
-          eyebrow="Step 3"
-          title="JD输入与结构化拆解"
-          description="在这里粘贴目标岗位 JD。系统会把它拆成职责、门槛、关键词和投递风险。"
-        />
-
-        <FormField
-          hint="建议直接粘贴完整 JD 文本，至少包含岗位职责和任职要求。"
-          label="目标岗位 JD"
-        >
-          <TextArea
-            className="min-h-56"
-            onChange={(event) => {
-              const value = event.target.value;
-              updateDraft((current) => ({
-                ...current,
-                jdText: value,
-                jdAnalysis: null,
-                matchAnalysis: null,
-                resumeDraft: null,
-              }));
-            }}
-            placeholder="请粘贴岗位 JD 原文，例如岗位职责、任职要求、加分项等。"
-            value={draft.jdText}
-          />
-        </FormField>
-
-        <div className="flex flex-wrap gap-4">
-          <button
-            className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white"
-            onClick={async () => {
-              if (draft.jdText.trim().length < 40) {
-                return;
-              }
-
-              await requestAnalysis();
-            }}
-            type="button"
-          >
-            {isAnalyzing ? "解析中..." : "解析 JD"}
-          </button>
-          <button
-            className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700"
-            onClick={() => {
-              if (!draft.jdAnalysis) {
-                return;
-              }
-              router.push(withTaskId("/tasks/demo/analysis", taskId));
-            }}
-            type="button"
-          >
-            下一步：匹配分析
-          </button>
-        </div>
-
-        {error ? (
-          <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-7 text-rose-700">
-            {error}
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <GlobalStepper />
+      
+      <div className="mx-auto max-w-5xl px-6 py-10">
+        <section className="grid gap-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="flex items-start justify-between gap-4">
+            <SectionTitle
+              eyebrow="Step 3"
+              title="JD 输入与结构化拆解"
+              description="在这里粘贴目标岗位 JD 原文。AI 会精确提取职责核心、硬性要求及关键词。"
+            />
+            <div className="flex flex-col items-end gap-2 shrink-0">
+               <div className="flex h-9 items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-500 border border-slate-100">
+                {isSaving ? (
+                  <span className="flex items-center gap-1.5 text-cyan-600 font-bold">
+                    <span className="h-1 w-1 animate-ping rounded-full bg-cyan-500" />
+                    正在同步草稿...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                    <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                    已自动保存
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        ) : null}
 
-        <div aria-live="polite" className="min-h-6 text-sm leading-6 text-slate-600">
-          {isSaving ? "JD 草稿正在同步到后端..." : null}
-        </div>
+          <div className="grid gap-6">
+            <FormField
+              hint="建议包含岗位职责、任职要求、加分项等完整内容。"
+              label="目标岗位 JD 原文"
+            >
+              <TextArea
+                className="min-h-64 rounded-2xl border-slate-200 bg-slate-50/30 p-5 focus:bg-white focus:ring-4 focus:ring-cyan-500/10 transition-all font-mono text-sm leading-relaxed"
+                onChange={(event) => {
+                  const value = event.target.value;
+                  updateDraft((current) => ({
+                    ...current,
+                    jdText: value,
+                    jdAnalysis: null,
+                    matchAnalysis: null,
+                    resumeDraft: null,
+                  }));
+                }}
+                placeholder="在此粘贴岗位 JD..."
+                value={draft.jdText}
+              />
+            </FormField>
 
-        {!draft.jdAnalysis && draft.jdText.trim().length > 0 && draft.jdText.trim().length < 40 ? (
-          <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-7 text-rose-700">
-            JD 文本太短，暂时无法可靠拆解。至少补充岗位职责和任职要求后再继续。
+            <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
+              <Link
+                className="rounded-full px-6 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 active:scale-95"
+                href={withTaskId("/tasks/demo/intake", taskId)}
+              >
+                ← 返回修改经历
+              </Link>
+              <div className="flex gap-4">
+                <button
+                  className={`rounded-full px-10 py-3 text-sm font-bold border-2 transition-all active:scale-95 ${
+                    draft.jdText.trim().length < 40 
+                      ? "border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed" 
+                      : "border-slate-950 bg-white text-slate-950 hover:bg-slate-50 shadow-sm"
+                  }`}
+                  disabled={isAnalyzing || draft.jdText.trim().length < 40}
+                  onClick={async () => {
+                    await requestAnalysis();
+                  }}
+                  type="button"
+                >
+                  {isAnalyzing ? "正在进行 AI 深度拆解..." : "开始 AI 结构化拆解"}
+                </button>
+                {draft.jdAnalysis && (
+                  <button
+                    className="rounded-full bg-slate-950 px-10 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 hover:bg-slate-800 active:scale-95"
+                    onClick={() => router.push(withTaskId("/tasks/demo/analysis", taskId))}
+                    type="button"
+                  >
+                    进行匹配分析 →
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        ) : null}
 
-        {draft.jdAnalysis ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            <article className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 md:col-span-2">
-              <p className="text-sm font-semibold text-orange-700">岗位概述</p>
-              <p className="mt-2 text-sm leading-7 text-slate-700">{draft.jdAnalysis.summary}</p>
-            </article>
-            {[
-              { label: "核心职责", value: draft.jdAnalysis.coreResponsibilities },
-              { label: "硬性门槛", value: draft.jdAnalysis.hardRequirements },
-              { label: "加分项", value: draft.jdAnalysis.bonusItems },
-              { label: "ATS关键词", value: draft.jdAnalysis.atsKeywords },
-            ].map((item) => (
-              <article key={item.label} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
-                <p className="text-sm font-semibold text-orange-700">{item.label}</p>
-                <ul className="mt-3 grid gap-2 text-sm leading-7 text-slate-700">
-                  {item.value.length ? item.value.map((value) => <li key={value}>{value}</li>) : <li>暂无</li>}
-                </ul>
+          {error && (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm font-medium text-rose-700">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {!draft.jdAnalysis && draft.jdText.trim().length > 0 && draft.jdText.trim().length < 40 && (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm font-medium text-amber-700">
+              💡 JD 内容过短，AI 无法进行完整分析。请至少补充 40 字以上的职位描述。
+            </div>
+          )}
+
+          {draft.jdAnalysis && (
+            <div className="grid gap-x-6 gap-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <article className="rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="h-4 w-1 rounded-full bg-cyan-500" />
+                  <h3 className="text-sm font-bold text-slate-950 uppercase tracking-widest">岗位情报概述</h3>
+                </div>
+                <p className="text-sm leading-8 text-slate-600 font-medium">{draft.jdAnalysis.summary}</p>
               </article>
-            ))}
-          </div>
-        ) : null}
 
-        <div className="flex flex-wrap gap-4">
-          <Link className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700" href={withTaskId("/tasks/demo/intake", taskId)}>
-            返回经历录入
-          </Link>
-        </div>
-      </section>
+              <div className="grid gap-6 md:grid-cols-2">
+                {[
+                  { label: "核心职责", value: draft.jdAnalysis.coreResponsibilities, color: "bg-blue-500" },
+                  { label: "硬性门槛", value: draft.jdAnalysis.hardRequirements, color: "bg-rose-500" },
+                  { label: "加分项", value: draft.jdAnalysis.bonusItems, color: "bg-emerald-500" },
+                  { label: "ATS 关键词", value: draft.jdAnalysis.atsKeywords, color: "bg-purple-500" },
+                ].map((item) => (
+                  <article key={item.label} className="group rounded-[1.5rem] border border-slate-100 bg-white p-6 shadow-sm hover:shadow-md transition-all">
+                    <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+                      <span className={`h-3 w-3 rounded-md ${item.color}`} />
+                      <h3 className="text-xs font-bold text-slate-950 uppercase tracking-widest">{item.label}</h3>
+                    </div>
+                    <ul className="grid gap-3 text-sm leading-relaxed text-slate-600">
+                      {item.value.length ? (
+                        item.value.map((value) => (
+                          <li key={value} className="flex items-start gap-2">
+                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-300" />
+                            <span>{value}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="italic text-slate-400">暂无明确识别</li>
+                      )}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

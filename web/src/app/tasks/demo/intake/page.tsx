@@ -14,6 +14,7 @@ import type {
   ProjectItem,
   SkillItem,
 } from "@/lib/mvp-types";
+import { GlobalStepper } from "@/components/global-stepper";
 
 const basicFields: Array<{ key: keyof BasicInfo; label: string; hint?: string }> = [
   { key: "name", label: "姓名" },
@@ -46,17 +47,25 @@ function IntakePageContent() {
 
   if (!taskId) {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
-        <section className="mx-auto grid w-full max-w-4xl gap-6 rounded-[2rem] border border-slate-200 bg-white p-8">
-          <SectionTitle
-            eyebrow="Step 2"
-            title="缺少任务上下文"
-            description="请先从新建任务页面创建一个服务端任务，再回来录入经历。"
-          />
-          <Link className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white" href="/tasks/new">
-            返回新建任务
-          </Link>
-        </section>
+      <main className="min-h-screen bg-slate-50 text-slate-900">
+        <GlobalStepper />
+        <div className="mx-auto max-w-4xl px-6 py-20">
+          <section className="grid gap-6 rounded-[2rem] border border-slate-200 bg-white p-12 text-center shadow-sm">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+              <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+              </svg>
+            </div>
+            <SectionTitle
+              eyebrow="Error"
+              title="缺少任务上下文"
+              description="请先从新建任务页面创建一个服务端任务，再回来录入经历。"
+            />
+            <Link className="mx-auto mt-4 rounded-full bg-slate-950 px-8 py-3 text-sm font-bold text-white transition hover:bg-slate-800" href="/tasks/new">
+              ← 返回新建任务
+            </Link>
+          </section>
+        </div>
       </main>
     );
   }
@@ -107,33 +116,7 @@ function IntakePageContent() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
-      {/* 顶部进度条 */}
-      <nav className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-8">
-            <h1 className="text-lg font-bold tracking-tight text-slate-950">AI 求职全链路</h1>
-            <div className="hidden h-1.5 w-48 overflow-hidden rounded-full bg-slate-100 md:block">
-              <div className="h-full w-1/2 rounded-full bg-cyan-500 transition-all duration-500" />
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-sm font-medium text-slate-500">
-            <span className="flex items-center gap-2 text-cyan-600">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-100 text-[10px] font-bold">1</span>
-              任务创建
-            </span>
-            <span className="h-px w-4 bg-slate-200" />
-            <span className="flex items-center gap-2 text-slate-900">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-950 text-[10px] font-bold text-white">2</span>
-              简历同步
-            </span>
-            <span className="h-px w-4 bg-slate-200" />
-            <span className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold">3</span>
-              匹配分析
-            </span>
-          </div>
-        </div>
-      </nav>
+      <GlobalStepper />
 
       <div className="mx-auto flex max-w-[1600px] gap-6 p-6">
         {/* 左侧：表单录入区 */}
