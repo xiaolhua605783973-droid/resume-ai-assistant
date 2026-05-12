@@ -200,7 +200,7 @@ function AnalysisPageContent() {
                 className="rounded-full bg-cyan-500 px-12 py-4 text-sm font-bold text-white shadow-2xl shadow-cyan-500/40 transition hover:scale-105 active:scale-95 animate-pulse"
                 href={withTaskId("/tasks/demo/resume", taskId)}
               >
-                简历方案也已就绪：查看最终成品 →
+                已生成简历初稿，前往预览继续编辑 →
               </Link>
             ) : (
               <button
