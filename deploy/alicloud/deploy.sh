@@ -10,11 +10,13 @@ APP_DOMAIN="${APP_DOMAIN:-}"
 APP_URL="${APP_URL:-}"
 NODE_VERSION="${NODE_VERSION:-20.19.5}"
 NGINX_SERVER_CONF="${NGINX_SERVER_CONF:-}"
+ARTIFACT_FILE="${ARTIFACT_FILE:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 WEB_DIR="${WEB_DIR:-${REPO_ROOT}/web}"
 DEPLOY_ROOT="${DEPLOY_ROOT:-/opt/${APP_NAME}}"
+APP_DIR="${APP_DIR:-${DEPLOY_ROOT}/app}"
 RUNTIME_DIR="${DEPLOY_ROOT}/runtime"
 CONFIG_DIR="${DEPLOY_ROOT}/config"
 STATE_DIR="${STATE_DIR:-/var/lib/${APP_NAME}}"
@@ -64,9 +66,14 @@ if [[ -z "$APP_URL" ]]; then
   APP_URL="https://${APP_DOMAIN}${APP_BASE_PATH}"
 fi
 
-[[ -f "${WEB_DIR}/package.json" ]] || fail "未找到 web/package.json：${WEB_DIR}"
 [[ -n "$NGINX_SERVER_CONF" ]] || fail "请通过 NGINX_SERVER_CONF 指定 ai radar 当前站点的 nginx server 配置文件路径。"
 [[ -f "$NGINX_SERVER_CONF" ]] || fail "NGINX_SERVER_CONF 不存在：${NGINX_SERVER_CONF}"
+
+if [[ -z "$ARTIFACT_FILE" ]]; then
+  ARTIFACT_FILE="${REPO_ROOT}/dist/${APP_NAME}-prebuilt.tar.gz"
+fi
+
+[[ -f "$ARTIFACT_FILE" ]] || fail "未找到预构建部署包：${ARTIFACT_FILE}"
 
 if [[ "$EUID" -ne 0 ]]; then
   fail "请使用 root 或 sudo 运行该脚本。"
@@ -175,17 +182,13 @@ ANALYSIS_API_PATH=${ANALYSIS_API_PATH:-${existing_api_path:-/chat/completions}}
 EOF
 }
 
-install_dependencies_and_build() {
-  log "安装依赖并构建生产版本"
-  cd "$WEB_DIR"
+install_prebuilt_bundle() {
+  log "解压预构建部署包 ${ARTIFACT_FILE}"
+  rm -rf "$APP_DIR"
+  mkdir -p "$APP_DIR"
+  tar -xzf "$ARTIFACT_FILE" -C "$APP_DIR"
 
-  set -a
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
-  set +a
-
-  PATH="${NODE_BIN}:$PATH" npm ci --include=dev
-  PATH="${NODE_BIN}:$PATH" npm run build
+  [[ -f "${APP_DIR}/server.js" ]] || fail "部署包缺少 server.js：${APP_DIR}/server.js"
 }
 
 write_systemd_service() {
@@ -197,9 +200,9 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=${WEB_DIR}
+WorkingDirectory=${APP_DIR}
 EnvironmentFile=${ENV_FILE}
-ExecStart=${NODE_BIN}/node ${WEB_DIR}/node_modules/next/dist/bin/next start -p ${APP_PORT} -H 127.0.0.1
+ExecStart=${NODE_BIN}/node ${APP_DIR}/server.js
 Restart=always
 RestartSec=5
 User=root
@@ -275,18 +278,20 @@ print_summary() {
 - 本地端口: 127.0.0.1:${APP_PORT}
 - systemd 服务: ${SERVICE_NAME}
 - 任务数据目录: ${TASK_DATA_DIR}
+- 应用目录: ${APP_DIR}
+- 预构建包: ${ARTIFACT_FILE}
 - nginx 主站配置: ${NGINX_SERVER_CONF}
 - nginx 片段: ${NGINX_SNIPPET_FILE}
 
-后续更新代码时，在服务器仓库目录执行：
-  sudo APP_DOMAIN=${APP_DOMAIN:-example.com} NGINX_SERVER_CONF=${NGINX_SERVER_CONF} ${SCRIPT_DIR}/deploy.sh
+后续更新时，先重新生成并上传预构建包，再在服务器执行：
+  sudo APP_DOMAIN=${APP_DOMAIN:-example.com} NGINX_SERVER_CONF=${NGINX_SERVER_CONF} ARTIFACT_FILE=${ARTIFACT_FILE} ${SCRIPT_DIR}/deploy.sh
 EOF
 }
 
 install_system_packages
 install_node_runtime
 write_env_file
-install_dependencies_and_build
+install_prebuilt_bundle
 write_systemd_service
 write_nginx_snippet
 attach_nginx_snippet

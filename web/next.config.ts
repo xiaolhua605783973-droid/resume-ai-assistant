@@ -16,6 +16,7 @@ const normalizedBasePath = (() => {
 
 const nextConfig: NextConfig = {
   basePath: normalizedBasePath || undefined,
+  output: "standalone",
 };
 
 export default nextConfig;
