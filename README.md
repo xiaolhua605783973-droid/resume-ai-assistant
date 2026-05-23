@@ -12,8 +12,9 @@ A JD-driven resume assistant MVP built with Next.js for resume parsing, job-matc
 
 1. [Quick Start](#quick-start)
 2. [Deployment](#deployment)
-3. [Known Limitations](#known-limitations)
-4. [Roadmap](#roadmap)
+3. [Contributing](#contributing)
+4. [Known Limitations](#known-limitations)
+5. [Roadmap](#roadmap)
 
 ## Use Cases
 
@@ -157,6 +158,18 @@ sudo APP_DOMAIN=ai-radar.vip \
 2. [docs](docs) — project memory, status log, and deployment notes
 3. [deploy](deploy) — deployment automation
 4. [AGENTS.md](AGENTS.md) — repository workflow contract
+
+## Contributing
+
+Contributions are welcome, but this repository is still moving inside a narrow MVP boundary.
+
+Before opening a larger feature change, align it with the current scope:
+
+1. keep work focused on the JD-driven resume decision flow
+2. avoid broadening into a full job-search platform without an explicit scope decision
+3. prefer small, testable changes over large mixed refactors
+
+For contribution expectations and local workflow notes, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Known Limitations
 
