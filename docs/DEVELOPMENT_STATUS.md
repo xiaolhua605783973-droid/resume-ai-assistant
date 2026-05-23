@@ -89,6 +89,7 @@
 - `web`: `npm run lint` passed with `NEXT_PUBLIC_APP_BASE_PATH=/resume-tool`, `NEXT_PUBLIC_APP_URL=https://example.com/resume-tool`, and `TASK_DATA_DIR=/tmp/resume-tool-tasks` after making the app subpath-deployable and externalizing task storage.
 - `web`: `npm run build` passed with the same deployment env settings, confirming the app can build for same-domain child-path deployment.
 - `deploy`: `bash -n deploy/alicloud/deploy.sh` passed after adding the one-click Alibaba Cloud deployment script for shared-domain subpath publishing.
+- `docs`: reviewed the new root `README.md` content as the repository homepage copy so it reflects the actual MVP scope, startup path, and Alibaba Cloud child-path deployment flow.
 - `web`: `npm run lint` passed after redesigning all task pages and the home page for visual consistency.
 - `web`: manual browser walkthrough confirmed `GlobalStepper` correctly tracks progress from Step 1 (New) to Step 5 (Resume).
 - `web`: `npm run lint` passed after fixing a nested JSX tag error in `analysis/page.tsx` that was breaking the build.
@@ -168,6 +169,7 @@
 - Fixed the resume print CSS so the printable canvas keeps its own header, preserving the岗位定向抬头 and 职业总结 sections in downloaded PDFs.
 - Aligned the print-only resume padding with the visible canvas so the sample export returns to a true one-page layout instead of slightly overflowing onto a second page.
 - Added same-domain child-path deployment support, externalized production task storage, and created an Alibaba Cloud one-click deployment script for wiring systemd plus the existing Nginx site.
+- Added a repository-level `README.md` with open-source-facing homepage copy covering product scope, stack, quick start, and deployment entry points.
 - Corrected the Step 4 footer CTA so it describes the generated output as an editable resume draft instead of a fully finished resume solution.
 - Repaired a broken JSX container boundary in the intake page so the app compiles again during validation.
 
