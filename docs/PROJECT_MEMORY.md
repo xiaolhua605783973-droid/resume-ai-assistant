@@ -34,6 +34,7 @@
 - The repository has been initialized with git on the `main` branch.
 - `web/` is tracked as normal source files in the root repository, not as a submodule or nested git repository.
 - Private source materials under `知识库/` and the root `AI求职全链路工具 - MVP版PRD文档` must stay git-ignored and must not be published to GitHub.
+- If private materials were ever pushed already, removing them from the current tree is not sufficient; rewrite published history before treating the repository as cleaned.
 
 ## Current App Surface
 
