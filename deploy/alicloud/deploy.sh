@@ -184,7 +184,7 @@ install_dependencies_and_build() {
   source "$ENV_FILE"
   set +a
 
-  PATH="${NODE_BIN}:$PATH" npm ci
+  PATH="${NODE_BIN}:$PATH" npm ci --include=dev
   PATH="${NODE_BIN}:$PATH" npm run build
 }
 
