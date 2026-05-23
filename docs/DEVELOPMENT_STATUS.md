@@ -52,6 +52,7 @@
 
 - `docs`: reviewed `README.md` and added GitHub-renderable Mermaid diagrams for both the product flow and the shared-domain deployment architecture.
 - `docs`: updated the repository status log to record the new homepage diagrams without altering application behavior.
+- `repo`: corrected `.gitignore` to cover `知识库/` and `AI求职全链路工具 - MVP版PRD文档`, then removed both private paths from git tracking with `git rm --cached` while keeping local files intact.
 
 ### 2026-05-10
 
@@ -185,6 +186,7 @@
 ### 2026-05-23
 
 - Added Mermaid-based product-flow and deployment-architecture diagrams to the repository `README.md` so the GitHub homepage explains both the user journey and the child-path deployment model visually.
+- Updated `.gitignore` and removed the private knowledge-base folder plus the root PRD document from git tracking so they are no longer published with the repository.
 
 ## Handoff Notes
 
