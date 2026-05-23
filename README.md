@@ -1,6 +1,28 @@
 # resume-ai-assistant
 
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149eca)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4)](https://tailwindcss.com/)
+[![Deployment](https://img.shields.io/badge/Deploy-Aliyun%20%2B%20Nginx-ff6a00)](docs/ALIYUN_DEPLOYMENT.md)
+
 A JD-driven resume assistant MVP built with Next.js for resume parsing, job-match analysis, rewrite drafts, and browser-based PDF export.
+
+## Quick Links
+
+1. [Quick Start](#quick-start)
+2. [Deployment](#deployment)
+3. [Known Limitations](#known-limitations)
+4. [Roadmap](#roadmap)
+
+## Use Cases
+
+This project is currently most useful for:
+
+1. turning a rough existing resume into a JD-targeted application draft
+2. checking whether a candidate is broadly aligned with a target role before rewriting
+3. generating a cleaner resume editing surface from imported PDF, DOCX, or raw text content
+4. exporting a demo-ready PDF from a browser-based A4 preview flow
 
 ## What It Does
 
