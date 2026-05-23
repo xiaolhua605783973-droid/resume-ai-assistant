@@ -47,6 +47,17 @@ Out of scope for now:
 5. same-domain subpath deployment support such as `/resume-tool`
 6. Alibaba Cloud one-click deployment script for Nginx + systemd
 
+## Demo Flow
+
+The current end-to-end flow is designed for a single focused resume-optimization session:
+
+1. create a task
+2. import a resume or fill in experience manually
+3. paste the target JD and run structured analysis
+4. review match strengths, gaps, and risk signals
+5. jump into the generated resume draft
+6. edit the final version and export from the A4 PDF preview
+
 ## Quick Start
 
 This repository uses the vendored Node.js runtime under `.tools/node` on the original development machine. In the `web/` app:
@@ -105,12 +116,41 @@ The production deployment model is:
 2. this app runs on an isolated local port
 3. Nginx proxies a child path such as `/resume-tool`
 
+Example deployment command:
+
+```bash
+sudo APP_DOMAIN=ai-radar.vip \
+	APP_BASE_PATH=/resume-tool \
+	APP_PORT=3010 \
+	NGINX_SERVER_CONF=/etc/nginx/sites-available/ai-radar \
+	ANALYSIS_API_BASE_URL=https://api.deepseek.com \
+	ANALYSIS_API_KEY=your-key \
+	ANALYSIS_API_MODEL=deepseek-v4-flash \
+	bash deploy/alicloud/deploy.sh
+```
+
 ## Project Structure
 
 1. [web](web) — Next.js application
 2. [docs](docs) — project memory, status log, and deployment notes
 3. [deploy](deploy) — deployment automation
 4. [AGENTS.md](AGENTS.md) — repository workflow contract
+
+## Known Limitations
+
+1. the current MVP uses JSON-file task persistence instead of a production database
+2. browser PDF export is based on print CSS, so output quality depends on browser print behavior
+3. there is no authentication or user workspace isolation yet
+4. resume generation is optimized for the current JD-driven workflow, not a full career platform
+5. some deployment assumptions still target a single-server Nginx + systemd setup
+
+## Roadmap
+
+1. add task history and multi-session navigation
+2. improve resume parser confidence signals and section recovery
+3. add stronger production persistence and storage strategy
+4. refine PDF export polish and template quality
+5. evaluate a cleaner local-only or privacy-first production architecture
 
 ## Status
 
