@@ -81,6 +81,30 @@ The current end-to-end flow is designed for a single focused resume-optimization
 5. jump into the generated resume draft
 6. edit the final version and export from the A4 PDF preview
 
+## Product Flow Diagram
+
+```mermaid
+flowchart LR
+	A[Resume Input\nTXT / DOCX / PDF / Manual] --> B[Resume Parsing\nNormalize fields and sections]
+	B --> C[JD Input\nTarget role and requirements]
+	C --> D[JD Analysis\nStructured extraction]
+	D --> E[Match Analysis\nStrengths gaps risks]
+	E --> F[Resume Draft\nEditable rewrite output]
+	F --> G[Resume Preview\nA4 browser canvas]
+	G --> H[PDF Export\nPrint CSS workflow]
+```
+
+## Deployment Diagram
+
+```mermaid
+flowchart TB
+	User[Browser] --> Nginx[Nginx on ai-radar.vip]
+	Nginx -->|/| MainSite[Existing AI Radar site]
+	Nginx -->|/resume-tool| NextApp[Next.js app process\nPort 3010]
+	NextApp --> TaskStore[TASK_DATA_DIR\nJSON task storage]
+	NextApp --> AnalysisAPI[OpenAI-compatible API\nDeepSeek or other provider]
+```
+
 ## Quick Start
 
 This repository uses the vendored Node.js runtime under `.tools/node` on the original development machine. In the `web/` app:

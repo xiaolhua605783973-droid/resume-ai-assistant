@@ -48,6 +48,11 @@
 
 ## Validation History
 
+### 2026-05-23
+
+- `docs`: reviewed `README.md` and added GitHub-renderable Mermaid diagrams for both the product flow and the shared-domain deployment architecture.
+- `docs`: updated the repository status log to record the new homepage diagrams without altering application behavior.
+
 ### 2026-05-10
 
 - `web`: `npm run lint` passed with local Node path.
@@ -176,6 +181,10 @@
 - Added `CONTRIBUTING.md` plus a GitHub repository metadata/setup guide to round out the public repository surface.
 - Corrected the Step 4 footer CTA so it describes the generated output as an editable resume draft instead of a fully finished resume solution.
 - Repaired a broken JSX container boundary in the intake page so the app compiles again during validation.
+
+### 2026-05-23
+
+- Added Mermaid-based product-flow and deployment-architecture diagrams to the repository `README.md` so the GitHub homepage explains both the user journey and the child-path deployment model visually.
 
 ## Handoff Notes
 
