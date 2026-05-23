@@ -1,5 +1,21 @@
 import type { TaskDraft, TaskRecord } from "@/lib/mvp-types";
 
+const normalizedBasePath = (() => {
+  const rawBasePath = process.env.NEXT_PUBLIC_APP_BASE_PATH?.trim();
+
+  if (!rawBasePath || rawBasePath === "/") {
+    return "";
+  }
+
+  const withLeadingSlash = rawBasePath.startsWith("/")
+    ? rawBasePath
+    : `/${rawBasePath}`;
+
+  return withLeadingSlash.replace(/\/+$/, "");
+})();
+
+const withApiBasePath = (path: string) => `${normalizedBasePath}${path}`;
+
 type TaskResponse = {
   task: TaskRecord;
   message?: string;
@@ -17,17 +33,17 @@ const parseResponse = async (response: Response) => {
 };
 
 export const createTask = async () => {
-  const response = await fetch("/api/tasks", { method: "POST" });
+  const response = await fetch(withApiBasePath("/api/tasks"), { method: "POST" });
   return parseResponse(response);
 };
 
 export const fetchTask = async (taskId: string) => {
-  const response = await fetch(`/api/tasks/${taskId}`, { cache: "no-store" });
+  const response = await fetch(withApiBasePath(`/api/tasks/${taskId}`), { cache: "no-store" });
   return parseResponse(response);
 };
 
 export const persistTaskDraft = async (taskId: string, draft: TaskDraft) => {
-  const response = await fetch(`/api/tasks/${taskId}`, {
+  const response = await fetch(withApiBasePath(`/api/tasks/${taskId}`), {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +55,7 @@ export const persistTaskDraft = async (taskId: string, draft: TaskDraft) => {
 };
 
 export const analyzeTask = async (taskId: string) => {
-  const response = await fetch(`/api/tasks/${taskId}/analyze`, {
+  const response = await fetch(withApiBasePath(`/api/tasks/${taskId}/analyze`), {
     method: "POST",
   });
 
@@ -50,7 +66,7 @@ export const parseResumeFile = async (taskId: string, file: File) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`/api/tasks/${taskId}/parse-resume`, {
+  const response = await fetch(withApiBasePath(`/api/tasks/${taskId}/parse-resume`), {
     method: "POST",
     body: formData,
   });

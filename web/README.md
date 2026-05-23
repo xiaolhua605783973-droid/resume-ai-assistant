@@ -53,14 +53,29 @@ cp .env.example .env.local
 
 1. `NEXT_PUBLIC_APP_NAME`
 2. `NEXT_PUBLIC_APP_URL`
-3. `NEXT_PUBLIC_ENABLE_MOCKS`
-4. `ANALYSIS_API_BASE_URL`
-5. `ANALYSIS_API_KEY`
-6. `ANALYSIS_API_MODEL`
-7. `ANALYSIS_API_PATH`
+3. `NEXT_PUBLIC_APP_BASE_PATH`
+4. `NEXT_PUBLIC_ENABLE_MOCKS`
+5. `ANALYSIS_API_BASE_URL`
+6. `ANALYSIS_API_KEY`
+7. `ANALYSIS_API_MODEL`
+8. `ANALYSIS_API_PATH`
+9. `TASK_DATA_DIR`
 
 其中分析链路默认支持 OpenAI-compatible Chat Completions 接口。
 如果没有配置 `ANALYSIS_API_BASE_URL`、`ANALYSIS_API_KEY`、`ANALYSIS_API_MODEL`，当前会回退到本地确定性分析逻辑，方便本地继续开发。
+
+如果需要把应用部署在同域名子路径下，例如 `https://example.com/resume-tool`，请在构建前设置：
+
+```bash
+NEXT_PUBLIC_APP_BASE_PATH=/resume-tool
+NEXT_PUBLIC_APP_URL=https://example.com/resume-tool
+```
+
+如果需要把任务 JSON 数据放到仓库之外的持久化目录，请设置：
+
+```bash
+TASK_DATA_DIR=/var/lib/resume-tool/tasks
+```
 
 ## 目录说明
 

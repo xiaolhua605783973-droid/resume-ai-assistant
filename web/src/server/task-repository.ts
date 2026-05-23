@@ -3,7 +3,9 @@ import path from "node:path";
 
 import { createEmptyTaskDraft, type TaskDraft, type TaskRecord } from "@/lib/mvp-types";
 
-const dataDir = path.join(process.cwd(), ".data", "tasks");
+const dataDir = process.env.TASK_DATA_DIR?.trim()
+  ? path.resolve(process.env.TASK_DATA_DIR)
+  : path.join(process.cwd(), ".data", "tasks");
 
 const ensureDataDir = async () => {
   await mkdir(dataDir, { recursive: true });
