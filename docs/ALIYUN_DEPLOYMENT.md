@@ -38,6 +38,8 @@
 1. [deploy/alicloud/deploy.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/deploy.sh)
 2. [deploy/alicloud/package.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/package.sh)
 3. [deploy/alicloud/local_deploy.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/local_deploy.sh)
+4. [docs/ACCEPTANCE_CHECKLIST.md](/Users/riclesmacbook/project/Ai求职全链路/docs/ACCEPTANCE_CHECKLIST.md)
+5. [docs/OPERATIONS_RUNBOOK.md](/Users/riclesmacbook/project/Ai求职全链路/docs/OPERATIONS_RUNBOOK.md)
 
 脚本会完成这些事：
 
@@ -162,3 +164,4 @@ sudo APP_DOMAIN=example.com \
 3. 子路径部署必须在构建前设置 `NEXT_PUBLIC_APP_BASE_PATH`，不能只靠 Nginx 转发。
 4. 任务数据默认写入 `/var/lib/resume-tool/tasks`，便于保留历史任务记录。
 5. `package.sh` 生成的部署包必须和服务器部署时使用同一个 `APP_BASE_PATH`，否则静态资源路径会错位。
+6. 上线完成后，建议按 [docs/ACCEPTANCE_CHECKLIST.md](/Users/riclesmacbook/project/Ai求职全链路/docs/ACCEPTANCE_CHECKLIST.md) 做验收，并把长期维护信息收敛到 [docs/OPERATIONS_RUNBOOK.md](/Users/riclesmacbook/project/Ai求职全链路/docs/OPERATIONS_RUNBOOK.md)。
