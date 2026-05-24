@@ -37,6 +37,7 @@
 
 1. [deploy/alicloud/deploy.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/deploy.sh)
 2. [deploy/alicloud/package.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/package.sh)
+3. [deploy/alicloud/local_deploy.sh](/Users/riclesmacbook/project/Ai求职全链路/deploy/alicloud/local_deploy.sh)
 
 脚本会完成这些事：
 
@@ -73,6 +74,38 @@ dist/resume-tool-prebuilt.tar.gz
 ```bash
 scp dist/resume-tool-prebuilt.tar.gz admin@your-server:/home/admin/resume-ai-assistant/dist/
 ```
+
+## 一键本地执行方案
+
+如果你已经有 SSH 私钥，并且希望从本地一条命令完成：本地打包、上传部署包、上传最新部署脚本、远程执行部署，可以直接运行：
+
+```bash
+SSH_HOST=114.215.175.182 \
+SSH_USER=root \
+SSH_KEY_PATH=/path/to/your-key.pem \
+APP_DOMAIN=ai-radar.vip \
+APP_BASE_PATH=/resume-tool \
+APP_PORT=3010 \
+NGINX_SERVER_CONF=/etc/nginx/sites-enabled/ai-radar \
+ANALYSIS_API_BASE_URL=https://api.deepseek.com \
+ANALYSIS_API_KEY=your-key \
+ANALYSIS_API_MODEL=deepseek-v4-flash \
+bash deploy/alicloud/local_deploy.sh
+```
+
+这个脚本会自动完成：
+
+1. 本地执行 `package.sh` 生成 standalone 部署包
+2. 通过 `ssh` 创建远程 `dist/` 目录
+3. 通过 `scp` 上传最新的 `deploy.sh`
+4. 通过 `scp` 上传最新部署包
+5. 在远程服务器上执行 `deploy.sh`
+
+常用可选变量：
+
+1. `SSH_PORT`：SSH 端口，默认 `22`
+2. `REMOTE_REPO_DIR`：远程仓库目录，默认 `/home/admin/resume-ai-assistant`
+3. `APP_URL`：如果你想显式指定线上 URL，可直接传入；默认使用 `http://<APP_DOMAIN><APP_BASE_PATH>`
 
 ## 使用方式
 
