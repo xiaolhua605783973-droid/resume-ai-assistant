@@ -2,17 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { DEMO_TASK_ID, createDemoTaskRecord } from "@/lib/demo-task";
+import { analyzeJd, analyzeMatch, generateResumeDraft } from "@/lib/mvp-engine";
 import {
   analyzeTask as analyzeTaskRequest,
   fetchTask,
   parseResumeFile,
   persistTaskDraft,
 } from "@/lib/mvp-api";
+import { getTaskDraft, saveTaskDraft } from "@/lib/mvp-store";
 import type { TaskDraft, TaskRecord } from "@/lib/mvp-types";
 
 export const useTaskDraft = (taskId: string | null) => {
+  const isDemoTask = taskId === DEMO_TASK_ID;
   const [task, setTask] = useState<TaskRecord | null>(null);
-  const [loaded, setLoaded] = useState(Boolean(!taskId));
+  const [loaded, setLoaded] = useState(Boolean(!taskId || isDemoTask));
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -23,6 +27,20 @@ export const useTaskDraft = (taskId: string | null) => {
   useEffect(() => {
     if (!taskId) {
       return;
+    }
+
+    if (isDemoTask) {
+      const demoLoadTimer = window.setTimeout(() => {
+        const demoRecord = createDemoTaskRecord();
+        demoRecord.draft = getTaskDraft();
+        demoRecord.updatedAt = demoRecord.draft.updatedAt;
+        setTask(demoRecord);
+        setError(null);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(demoLoadTimer);
+      };
     }
 
     let active = true;
@@ -63,10 +81,15 @@ export const useTaskDraft = (taskId: string | null) => {
         window.clearTimeout(savingIndicatorTimerRef.current);
       }
     };
-  }, [taskId]);
+  }, [isDemoTask, taskId]);
 
   const queuePersist = (nextDraft: TaskDraft) => {
     if (!taskId) {
+      return;
+    }
+
+    if (isDemoTask) {
+      saveTaskDraft(nextDraft);
       return;
     }
 
@@ -119,6 +142,39 @@ export const useTaskDraft = (taskId: string | null) => {
   const requestAnalysis = async () => {
     if (!taskId) {
       return null;
+    }
+
+    if (isDemoTask) {
+      let nextTask: TaskRecord | null = null;
+
+      setTask((current) => {
+        if (!current) {
+          return current;
+        }
+
+        const jdAnalysis = analyzeJd(current.draft.jdText);
+        const matchAnalysis = analyzeMatch(current.draft, jdAnalysis);
+        const resumeDraft = generateResumeDraft(current.draft, jdAnalysis, matchAnalysis);
+        const nextDraft = {
+          ...current.draft,
+          jdAnalysis,
+          matchAnalysis,
+          resumeDraft,
+          updatedAt: new Date().toISOString(),
+        };
+        const updatedTask = {
+          ...current,
+          updatedAt: nextDraft.updatedAt,
+          draft: nextDraft,
+        };
+
+        saveTaskDraft(nextDraft);
+        nextTask = updatedTask;
+        return updatedTask;
+      });
+
+      setError(null);
+      return nextTask;
     }
 
     setIsAnalyzing(true);

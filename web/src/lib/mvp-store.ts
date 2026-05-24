@@ -1,4 +1,5 @@
-import { createEmptyTaskDraft, type TaskDraft } from "@/lib/mvp-types";
+import { createDemoTaskDraft } from "@/lib/demo-task";
+import { type TaskDraft } from "@/lib/mvp-types";
 
 const STORAGE_KEY = "ai-job-mvp-demo-task";
 const EVENT_NAME = "ai-job-mvp-demo-task-change";
@@ -15,13 +16,13 @@ const emitDraftChange = () => {
 
 export const getTaskDraft = (): TaskDraft => {
   if (typeof window === "undefined") {
-    return cachedDraft ?? createEmptyTaskDraft();
+    return cachedDraft ?? createDemoTaskDraft();
   }
 
   const raw = window.localStorage.getItem(STORAGE_KEY);
 
   if (!raw) {
-    const initialDraft = createEmptyTaskDraft();
+    const initialDraft = createDemoTaskDraft();
     const serializedDraft = JSON.stringify(initialDraft);
     window.localStorage.setItem(STORAGE_KEY, serializedDraft);
     cachedDraft = initialDraft;
@@ -39,7 +40,7 @@ export const getTaskDraft = (): TaskDraft => {
     cachedRawDraft = raw;
     return parsedDraft;
   } catch {
-    const fallbackDraft = createEmptyTaskDraft();
+    const fallbackDraft = createDemoTaskDraft();
     const serializedDraft = JSON.stringify(fallbackDraft);
     window.localStorage.setItem(STORAGE_KEY, serializedDraft);
     cachedDraft = fallbackDraft;
@@ -67,10 +68,10 @@ export const saveTaskDraft = (draft: TaskDraft) => {
 
 export const resetTaskDraft = () => {
   if (typeof window === "undefined") {
-    return createEmptyTaskDraft();
+    return createDemoTaskDraft();
   }
 
-  const nextDraft = createEmptyTaskDraft();
+  const nextDraft = createDemoTaskDraft();
   const serializedDraft = JSON.stringify(nextDraft);
 
   window.localStorage.setItem(STORAGE_KEY, serializedDraft);
